@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="U Hřebíků">
+  <meta name="description" content="Zmrzlina & Občerstvení v Tečovicích. Kopečková zmrzlina, limonády, jídlo.">
+  <title>U Hřebíků — Zmrzlina & Občerstvení | Tečovice</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23080808'/%3E%3Crect x='5' y='4' width='22' height='8' rx='2' fill='%23b8bcc8'/%3E%3Crect x='13' y='12' width='6' height='13' fill='%23b8bcc8'/%3E%3Cpolygon points='13,25 19,25 16,30' fill='%23b8bcc8'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23080808'/%3E%3Crect x='70' y='20' width='40' height='60' rx='8' fill='%23b8bcc8'/%3E%3Crect x='82' y='80' width='16' height='70' rx='4' fill='%23b8bcc8'/%3E%3Cpolygon points='82,150 98,150 90,170' fill='%23b8bcc8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── LIGHT MODE (výchozí) ────────── */
+    :root {
+      --bg:       #f5f5f5;
+      --bg2:      #ebebeb;
+      --bg3:      #e0e0e0;
+      --text:     #0a0a0a;
+      --muted:    #666666;
+      --accent:   #444450;
+      --accent-bright: #222230;
+      --border:   rgba(0,0,0,0.12);
+      --nav-bg:   rgba(245,245,245,0.92);
+      --map-filter: grayscale(1) contrast(.9);
+    }
+
+    /* ── DARK MODE ───────────────────── */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:       #080808;
+        --bg2:      #111111;
+        --bg3:      #1a1a1a;
+        --text:     #ffffff;
+        --muted:    #888888;
+        --accent:   #b8bcc8;
+        --accent-bright: #dcdfe8;
+        --border:   rgba(200,200,200,0.13);
+        --nav-bg:   rgba(8,8,8,0.88);
+        --map-filter: grayscale(1) invert(.92) contrast(.88);
+      }
+    }
+
+    html { scroll-behavior:smooth; overflow-x:hidden; }
+    body {
+      background: var(--bg);
+      background-image: linear-gradient(180deg, #f5f5f5 0%, #ececec 30%, #e4e4e4 55%, #ececec 80%, #f5f5f5 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'Raleway', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-image: linear-gradient(180deg, #050505 0%, #141414 30%, #1e1e1e 55%, #141414 80%, #050505 100%);
+      }
+    }
+
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; z-index: 300;
+      height: 2px; width: 0%;
+      background: linear-gradient(to right, #999, #444, #111);
+      transition: width .08s linear;
+      pointer-events: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #scroll-progress { background: linear-gradient(to right, #555, #b8bcc8, #fff); }
+      #loader { background: var(--bg); }
+      .loader-name { color: var(--text); }
+      .loader-bar { background: rgba(200,200,200,.12); }
+    }
+
+    /* ─── NAV ─────────────────────────── */
+    nav {
+      position: fixed; top:0; width:100%; z-index:200;
+      padding: 1.1rem 3rem;
+      display: flex; justify-content:space-between; align-items:center;
+      background: var(--nav-bg);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1.45rem; font-weight:800; letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--text); text-decoration:none;
+    }
+    .nav-links { display:flex; gap:2.2rem; list-style:none; }
+    .nav-links a {
+      color:var(--muted); text-decoration:none;
+      font-size:.7rem; letter-spacing:.22em; text-transform:uppercase;
+      transition:color .25s;
+    }
+    .nav-links a:hover { color:var(--accent); }
+
+    /* ─── HERO ────────────────────────── */
+    #hero {
+      height:100vh;
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      text-align:center; position:relative; overflow:hidden;
+    }
+    .hero-glow {
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse 70% 60% at 50% 45%, rgba(150,150,160,.07) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .hero-dots {
+      position:absolute; inset:0;
+      background-image: radial-gradient(circle, rgba(150,150,160,.12) 1px, transparent 1px);
+      background-size:38px 38px; opacity:.5; pointer-events:none;
+    }
+    .logo-area {
+      position:relative; z-index:2;
+      animation: fadeUp 1.3s cubic-bezier(.16,1,.3,1) both;
+    }
+    /* LOGO – nahraďte <img> tagem se svým logem */
+    .logo-wrap {
+      width:110px; height:110px; margin:0 auto 2rem;
+      border:1px solid rgba(184,188,200,.25); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif;
+      font-size:2.3rem; color:var(--accent); position:relative;
+    }
+    .logo-wrap::before {
+      content:''; position:absolute; inset:7px;
+      border:1px solid rgba(184,188,200,.12); border-radius:50%;
+    }
+    h1 {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size: clamp(4rem,11vw,9rem);
+      font-weight:800; letter-spacing:.04em;
+      text-transform:uppercase; line-height:1;
+    }
+    .hero-sub {
+      font-size:.7rem; letter-spacing:.42em; text-transform:uppercase;
+      color:var(--accent); margin:.7rem 0 1.8rem;
+    }
+    .hero-tagline {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600; font-size:1rem;
+      letter-spacing:.45em; text-transform:uppercase;
+      color:var(--muted); margin-bottom:2.8rem;
+    }
+    .btn-outline {
+      display:inline-block; padding:.8rem 2.4rem;
+      border:1px solid var(--accent); color:var(--accent);
+      text-decoration:none; font-size:.68rem; letter-spacing:.28em;
+      text-transform:uppercase; transition:all .3s; cursor:pointer;
+      background:none; font-family:'Raleway',sans-serif;
+    }
+    .btn-outline:hover { background:var(--accent); color:var(--bg); }
+    .scroll-hint {
+      position:absolute; bottom:2.2rem; left:50%; transform:translateX(-50%);
+      display:flex; flex-direction:column; align-items:center; gap:.4rem;
+      color:var(--muted); font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+      animation: scrollBounce 2.2s ease-in-out infinite;
+    }
+    .scroll-line {
+      width:1px; height:46px;
+      background:linear-gradient(to bottom,var(--accent),transparent);
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(28px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes scrollBounce {
+      0%,100% { transform:translateX(-50%) translateY(0); }
+      55%     { transform:translateX(-50%) translateY(7px); }
+    }
+
+    /* ─── SHARED SECTION ──────────────── */
+    .sec {
+      padding:7rem 3rem; max-width:1160px; margin:0 auto;
+    }
+    .sec-full {
+      padding:7rem 0;
+    }
+    .sec-inner { max-width:1160px; margin:0 auto; padding:0 3rem; }
+    .sec-bg { background:var(--bg2); }
+
+    .sec-head { text-align:center; margin-bottom:3.5rem; }
+    .sec-label {
+      display:block; font-size:.62rem; letter-spacing:.42em;
+      text-transform:uppercase; color:var(--accent); margin-bottom:.9rem;
+    }
+    .sec-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.2rem,5vw,3.6rem); font-weight:300; line-height:1.1;
+    }
+    .divider {
+      width:52px; height:1px; background:var(--accent); margin:1.4rem auto 0;
+    }
+
+    /* ─── MENU ────────────────────────── */
+    .tabs {
+      display:flex; justify-content:center; flex-wrap:wrap;
+      border-bottom:1px solid var(--border); margin-bottom:2.8rem;
+    }
+    .tab {
+      padding:.75rem 1.4rem; background:none; border:none;
+      color:var(--muted); cursor:pointer;
+      font-family:'Raleway',sans-serif; font-size:.68rem;
+      letter-spacing:.22em; text-transform:uppercase;
+      border-bottom:2px solid transparent; margin-bottom:-1px;
+      transition:all .25s;
+    }
+    .tab:hover { color:var(--text); }
+    .tab.on { color:var(--accent); border-bottom-color:var(--accent); }
+
+    .panel { display:none; }
+    .panel.on { display:block; }
+
+    .menu-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(190px,1fr));
+    }
+    .menu-item {
+      padding:1rem 0; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:.75rem; transition:padding-left .2s;
+    }
+    .menu-item:hover { padding-left:.4rem; }
+    .dot {
+      width:5px; height:5px; border-radius:50%;
+      background:var(--accent); flex-shrink:0; opacity:.6;
+    }
+    .item-name { font-size:1rem; letter-spacing:.04em; }
+    .menu-note {
+      display:inline-flex; align-items:center; gap:.5rem;
+      font-size:.85rem; color:var(--muted); letter-spacing:.04em;
+      border-left:2px solid var(--accent); padding:.3rem 0 .3rem .8rem;
+      margin-bottom:1.8rem; font-style:italic;
+    }
+
+    /* ─── GALLERY ─────────────────────── */
+    .gallery-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      grid-template-rows:repeat(2,240px);
+      gap:10px;
+    }
+    .gallery-grid .g-item:first-child { grid-row:span 2; }
+    .g-item { overflow:hidden; background:var(--bg3); }
+    .g-ph {
+      width:100%; height:100%;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:.7rem; border:1px dashed rgba(184,188,200,.18); transition:all .3s;
+    }
+    .g-ph:hover { border-color:var(--accent); }
+    .g-ph-icon { font-size:1.8rem; }
+    .g-ph-txt { font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+
+    /* GALLERY with real images */
+    .g-item img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .5s ease;
+    }
+    .g-item:hover img { transform:scale(1.04); }
+
+    /* ─── HOURS ───────────────────────── */
+    #hours { text-align:center; }
+    .hours-box {
+      display:inline-flex; flex-direction:column; gap:.9rem; min-width:280px;
+    }
+    .h-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding-bottom:.9rem; border-bottom:1px solid var(--border);
+    }
+    .h-day { font-size:.85rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+    .h-time {
+      font-family:'Cormorant Garamond',serif; font-size:1.45rem; font-weight:300;
+    }
+    .hours-note { margin-top:1.8rem; color:var(--muted); font-size:.9rem; }
+
+    /* ─── MAP ─────────────────────────── */
+    .map-wrap { position:relative; border:1px solid var(--border); overflow:hidden; }
+    .map-wrap iframe {
+      width:100%; height:400px; display:block;
+      filter: var(--map-filter);
+    }
+    .map-card {
+      position:absolute; top:1.8rem; left:1.8rem;
+      background:var(--bg); border:1px solid var(--border);
+      padding:1.4rem 1.8rem;
+    }
+    .map-name { font-family:'Cormorant Garamond',serif; font-size:1.5rem; margin-bottom:.25rem; }
+    .map-addr { font-size:.72rem; color:var(--muted); letter-spacing:.08em; margin-bottom:1rem; }
+    .map-nav-btn {
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.5rem 1rem; border:1px solid var(--accent); color:var(--accent);
+      text-decoration:none; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase;
+      transition:all .25s;
+    }
+    .map-nav-btn:hover { background:var(--accent); color:var(--bg); }
+
+    /* ─── GAME ────────────────────────── */
+    #game-section { text-align:center; }
+    .game-desc { color:var(--muted); font-size:.95rem; max-width:380px; margin:0 auto; line-height:1.7; }
+    .stats {
+      display:flex; justify-content:center; gap:4rem;
+      margin:2.5rem 0 1.5rem;
+    }
+    .stat-val {
+      font-family:'Cormorant Garamond',serif;
+      font-size:3rem; font-weight:300; color:var(--accent); line-height:1;
+    }
+    .stat-lbl { font-size:.62rem; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); margin-top:.3rem; }
+
+    .canvas-wrap { position:relative; display:inline-block; }
+    #gc {
+      display:block; margin:0 auto;
+      border:1px solid var(--border); background:#030303;
+      cursor:none; touch-action:none; max-width:100%;
+    }
+    /* Overlay je vždy tmavý — překrývá tmavý canvas */
+    .govl {
+      display:none; position:absolute; inset:0;
+      background:rgba(5,5,5,.95);
+      flex-direction:column; justify-content:center; align-items:center; gap:1.3rem;
+    }
+    .govl-title { font-family:'Cormorant Garamond',serif; font-size:2.4rem; font-weight:300; color:#ffffff; }
+    .govl-score { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:#b8bcc8; }
+    .name-input {
+      background:#111; border:1px solid rgba(200,200,200,.2); color:#ffffff;
+      padding:.65rem 1.2rem; font-family:'Raleway',sans-serif; font-size:.9rem;
+      text-align:center; letter-spacing:.1em; outline:none; width:190px;
+    }
+    .name-input:focus { border-color:#b8bcc8; }
+    /* Tlačítka v overlay vždy světlá */
+    .govl .btn-outline {
+      border-color:#b8bcc8; color:#b8bcc8;
+    }
+    .govl .btn-outline:hover { background:#b8bcc8; color:#050505; }
+    .game-btns { margin:1.5rem 0; display:flex; justify-content:center; gap:1rem; }
+
+    /* Leaderboard */
+    .lb { margin:3rem auto 0; max-width:520px; }
+    .lb-heading { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; margin-bottom:1.5rem; }
+    .lb-row {
+      display:flex; align-items:center;
+      padding:.75rem 0; border-bottom:1px solid var(--border);
+      gap:.5rem;
+    }
+    .lb-row.hidden { display:none; }
+    .lb-rank { width:32px; font-family:'Cormorant Garamond',serif; font-size:1.15rem; color:var(--muted); flex-shrink:0; }
+    .lb-rank.g { color:#FFD700; } .lb-rank.s { color:#C0C0C0; } .lb-rank.b { color:#CD7F32; }
+    .lb-name { flex:1; text-align:left; font-size:.95rem; padding-left:.6rem; }
+    .lb-date { font-size:.68rem; color:var(--muted); letter-spacing:.04em; flex-shrink:0; }
+    .lb-sc { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--accent); flex-shrink:0; min-width:2.5rem; text-align:right; }
+    .lb-empty { color:var(--muted); font-size:.88rem; padding:1rem 0; }
+    .lb-more-btn {
+      margin-top:1rem; background:none; border:1px solid var(--border);
+      color:var(--muted); padding:.5rem 1.5rem; cursor:pointer;
+      font-family:'Raleway',sans-serif; font-size:.72rem; letter-spacing:.15em;
+      text-transform:uppercase; transition:all .25s; width:100%;
+    }
+    .lb-more-btn:hover { border-color:var(--accent); color:var(--text); }
+
+    /* ─── SHARE MODAL ─────────────────── */
+    .share-overlay {
+      display:none; position:fixed; inset:0; z-index:9000;
+      background:rgba(0,0,0,.6);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      justify-content:center; align-items:center; padding:1.5rem;
+    }
+    .share-overlay.open { display:flex; }
+
+    .share-card {
+      background:#0a0a0a;
+      border:1px solid rgba(184,188,200,.18);
+      width:100%; max-width:400px;
+      position:relative; overflow:hidden;
+      animation: shareIn .35s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes shareIn {
+      from { opacity:0; transform:scale(.94) translateY(16px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+
+    /* barevný pruh nahoře */
+    .share-card::before {
+      content:''; display:block; height:3px;
+      background:linear-gradient(to right, #333, #b8bcc8, #fff, #b8bcc8, #333);
+    }
+
+    .share-inner { padding:1.8rem 2rem 1.6rem; }
+
+    .share-close {
+      position:absolute; top:1rem; right:1rem; z-index:1;
+      background:none; border:none; color:#555; cursor:pointer;
+      padding:.3rem; line-height:1; transition:color .2s;
+      font-size:1.1rem;
+    }
+    .share-close:hover { color:#fff; }
+
+    /* ikona + nadpis */
+    .share-head {
+      display:flex; align-items:center; gap:.9rem; margin-bottom:1.4rem;
+    }
+    .share-head-icon { opacity:.7; flex-shrink:0; }
+    .share-head-text {}
+    .share-title {
+      font-family:'Barlow Condensed',sans-serif; font-weight:800;
+      font-size:1.4rem; letter-spacing:.2em; text-transform:uppercase;
+      color:#fff; line-height:1;
+    }
+    .share-subtitle {
+      font-size:.62rem; letter-spacing:.15em; color:#666;
+      text-transform:uppercase; margin-top:.25rem;
+    }
+
+    /* skóre badge */
+    .share-score-badge {
+      background:#141414; border:1px solid rgba(184,188,200,.1);
+      padding:.9rem 1.2rem; margin-bottom:1.4rem;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .share-score-num {
+      font-family:'Cormorant Garamond',serif; font-size:2.8rem;
+      font-weight:300; color:#fff; line-height:1;
+    }
+    .share-score-label {
+      font-size:.6rem; letter-spacing:.2em; color:#555;
+      text-transform:uppercase; text-align:right; line-height:1.5;
+    }
+
+    /* kopírovat blok */
+    .share-copy-label {
+      font-size:.58rem; letter-spacing:.2em; text-transform:uppercase;
+      color:#444; margin-bottom:.5rem;
+    }
+    .share-textarea-wrap {
+      display:flex; gap:0; margin-bottom:1.3rem;
+      border:1px solid rgba(184,188,200,.12);
+    }
+    .share-copy-text {
+      flex:1; background:#111; border:none; outline:none; resize:none;
+      font-size:.7rem; color:#999; line-height:1.55; padding:.65rem .8rem;
+      font-family:'Raleway',sans-serif; cursor:text;
+    }
+    .share-copy-btn {
+      background:#1a1a1a; border:none; border-left:1px solid rgba(184,188,200,.1);
+      color:#777; padding:0 .9rem; cursor:pointer;
+      font-family:'Raleway',sans-serif; font-size:.6rem; letter-spacing:.1em;
+      transition:all .2s; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:.3rem; min-width:64px;
+    }
+    .share-copy-btn:hover { background:#222; color:#fff; }
+    .share-copy-btn.copied { color:#4caf50; }
+
+    /* tlačítka sítí */
+    .share-btns { display:flex; gap:.7rem; }
+    .share-btn {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:.55rem;
+      padding:.85rem .5rem; border:none; cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif; font-size:.95rem;
+      font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+      transition:opacity .2s;
+    }
+    .share-btn:hover { opacity:.85; }
+    .share-fb { background:#1877F2; color:#fff; }
+    .share-ig {
+      background:linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+      color:#fff;
+    }
+
+    .share-hint {
+      font-size:.62rem; color:#555; line-height:1.6;
+      text-align:center; margin-top:.9rem; min-height:.8rem;
+    }
+    .share-hint a { color:#b8bcc8; text-decoration:underline; }
+
+    /* ─── FOOTER ──────────────────────── */
+    footer {
+      text-align:center; padding:3.5rem 2rem;
+      border-top:1px solid var(--border); color:var(--muted);
+    }
+    .footer-name {
+      font-family:'Barlow Condensed',sans-serif; font-weight:800;
+      font-size:2rem; letter-spacing:.15em; text-transform:uppercase;
+      color:var(--text); margin-bottom:1.4rem;
+    }
+    .footer-contacts {
+      display:flex; justify-content:center; align-items:center;
+      gap:1.5rem; flex-wrap:wrap; margin-bottom:1rem;
+    }
+    .footer-link {
+      display:inline-flex; align-items:center; gap:.5rem;
+      color:var(--text); text-decoration:none; font-size:1rem;
+      font-weight:400; letter-spacing:.04em; transition:opacity .2s;
+    }
+    .footer-link:hover { opacity:.65; }
+    .footer-link svg { flex-shrink:0; opacity:.7; }
+    .footer-sep { color:var(--border); font-size:1.2rem; }
+    .footer-addr { font-size:.9rem; letter-spacing:.08em; margin-bottom:.5rem; }
+    .footer-operator { font-size:.75rem; letter-spacing:.04em; color:var(--muted); opacity:.6; }
+
+    /* ─── RESPONSIVE ──────────────────── */
+    /* ─── HAMBURGER ───────────────────── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      z-index: 201;
+      flex-shrink: 0;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      transition: all .3s;
+      border-radius: 2px;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity:0; }
+    .nav-hamburger.open span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
+
+    .nav-mobile {
+      display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+      z-index:150; background:rgba(8,8,10,.97);
+      flex-direction:column; justify-content:center; align-items:center;
+      gap:2.5rem;
+    }
+    .nav-mobile.open { display:flex; }
+    .nav-mobile a {
+      font-family:'Barlow Condensed',sans-serif; font-weight:800;
+      font-size:2rem; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--text); text-decoration:none; transition:color .2s;
+    }
+    .nav-mobile a:hover { color:var(--accent); }
+    .nav-mobile .nav-social {
+      display:flex; gap:1.5rem; margin-top:.5rem;
+    }
+    .nav-mobile .nav-social a {
+      font-size:1rem; color:var(--muted);
+    }
+
+    /* ─── RESPONSIVE ──────────────────── */
+    @media(max-width:900px){
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
+    }
+
+    @media(max-width:768px){
+      nav { padding:1rem 1.5rem; }
+
+      .sec { padding:4.5rem 1.2rem; }
+      .sec-inner { padding:0 1.2rem; }
+      .sec-full { padding:4.5rem 0; }
+      .sec-title { font-size:clamp(1.8rem,8vw,3rem); }
+
+      /* Hero */
+      #hero { padding: 0 1.2rem; }
+      .logo-wrap { width:80px; height:80px; margin-bottom:1.2rem; }
+      .logo-wrap svg { width:28px; height:52px; }
+      h1 { font-size:clamp(3rem,13vw,5.5rem); }
+      .hero-tagline { font-size:.8rem; letter-spacing:.3em; }
+      .hero-sub { font-size:.6rem; }
+
+      /* Menu */
+      .tabs { overflow-x:auto; justify-content:flex-start;
+              flex-wrap:nowrap; -webkit-overflow-scrolling:touch;
+              scrollbar-width:none; padding-bottom:2px; }
+      .tabs::-webkit-scrollbar { display:none; }
+      .tab { white-space:nowrap; flex-shrink:0; }
+
+      /* Gallery */
+      .gallery-grid { grid-template-columns:1fr 1fr; grid-template-rows:auto; }
+      .gallery-grid .g-item:first-child { grid-row:auto; }
+
+      /* Map */
+      .map-card { position:static; margin-bottom:0; border:none;
+                  border-top:1px solid var(--border); padding:1.2rem 1.5rem;
+                  display:flex; align-items:center; justify-content:space-between;
+                  flex-wrap:wrap; gap:.8rem; }
+      .map-wrap { border:1px solid var(--border); }
+      .map-wrap iframe { height:260px; }
+
+      /* Game */
+      .stats { gap:1.5rem; }
+      .stat-val { font-size:2rem; }
+      #gc { max-width:calc(100vw - 2.4rem); }
+
+      /* Footer */
+      .footer-contacts { flex-direction:column; gap:.7rem; align-items:center; }
+      .footer-sep { display:none; }
+    }
+
+    @media(max-width:480px){
+      .gallery-grid { grid-template-columns:1fr; }
+      .tab { padding:.55rem .7rem; font-size:.6rem; }
+      .menu-grid { grid-template-columns:1fr 1fr; }
+      .hours-box { min-width:unset; width:100%; }
+      .h-row { flex-direction:column; align-items:flex-start; gap:.3rem; }
+      .game-btns { flex-direction:column; align-items:center; }
+      .govl { padding:1.5rem; }
+      .govl-title { font-size:1.8rem; }
+    }
+
+    /* ─── LOADING SCREEN ──────────────── */
+    #loader {
+      position:fixed; inset:0; z-index:9999;
+      background:var(--bg);
+      display:flex; flex-direction:column;
+      justify-content:center; align-items:center; gap:1.8rem;
+      transition:opacity .6s ease, visibility .6s ease;
+    }
+    #loader.hidden { opacity:0; visibility:hidden; }
+
+    .loader-nail {
+      animation: loaderDrop .9s cubic-bezier(.22,1,.36,1) both;
+    }
+    .loader-name {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:2.2rem; font-weight:800; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--text);
+      animation: loaderFade .9s .2s ease both;
+    }
+    .loader-sub {
+      font-family:'Raleway',sans-serif; font-weight:300;
+      font-size:.65rem; letter-spacing:.45em; text-transform:uppercase;
+      color:var(--muted);
+      animation: loaderFade .9s .4s ease both;
+    }
+    .loader-bar {
+      width:120px; height:1px;
+      background:rgba(184,188,200,.15); position:relative; overflow:hidden;
+      animation: loaderFade .5s .3s ease both;
+    }
+    .loader-bar::after {
+      content:''; position:absolute; left:-100%; top:0;
+      width:100%; height:100%;
+      background:linear-gradient(to right, transparent, var(--accent), transparent);
+      animation: loaderScan 1s .4s ease-in-out infinite;
+    }
+    @keyframes loaderDrop {
+      from { opacity:0; transform:translateY(-24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes loaderFade {
+      from { opacity:0; } to { opacity:1; }
+    }
+    @keyframes loaderScan {
+      from { left:-100%; } to { left:200%; }
+    }
+
+    /* ─── SCROLL REVEAL ───────────────── */
+    .reveal {
+      opacity:0; transform:translateY(32px);
+      transition:opacity .7s ease, transform .7s ease;
+    }
+    .reveal.stagger-1 { transition-delay:.1s; }
+    .reveal.stagger-2 { transition-delay:.2s; }
+    .reveal.stagger-3 { transition-delay:.3s; }
+    .reveal.stagger-4 { transition-delay:.4s; }
+    .reveal.visible   { opacity:1; transform:translateY(0); }
+
+    .reveal-left {
+      opacity:0; transform:translateX(-28px);
+      transition:opacity .7s ease, transform .7s ease;
+    }
+    .reveal-left.visible { opacity:1; transform:translateX(0); }
+
+    /* ─── SEASONAL BANNER ────────────── */
+    #seasonal-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 250;
+      background: var(--bg); border-bottom: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      gap: 1rem; padding: .7rem 3rem .7rem 1rem;
+      transition: transform .3s;
+    }
+    #seasonal-banner.hidden { transform: translateY(-100%); }
+    .banner-label {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      letter-spacing: .2em; text-transform: uppercase; font-size: 1rem;
+      color: var(--accent); flex-shrink: 0;
+    }
+    .banner-flavors {
+      color: var(--text); font-size: .95rem;
+      letter-spacing: .06em;
+    }
+    .banner-close {
+      position: absolute; right: .9rem;
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 1.1rem; line-height: 1; padding: .3rem;
+    }
+    /* posun nav dolů když je banner viditelný */
+    body.has-banner nav { top: 44px; }
+    body.has-banner #scroll-progress { top: 44px; }
+
+    /* ─── BACK TO TOP ─────────────────── */
+    #back-to-top {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 190;
+      width: 42px; height: 42px; background: var(--bg2);
+      border: 1px solid var(--border); color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s, transform .3s;
+      transform: translateY(12px);
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #back-to-top:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── LIGHTBOX ───────────────────── */
+    #lightbox {
+      display: none; position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,.95); justify-content: center; align-items: center;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 92vw; max-height: 90vh; object-fit: contain;
+      animation: lbIn .25s ease;
+    }
+    #lightbox-placeholder {
+      text-align: center; color: #666;
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.3rem;
+    }
+    @keyframes lbIn { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+    #lightbox-close {
+      position: absolute; top: 1.2rem; right: 1.5rem;
+      background: none; border: none; color: #888; font-size: 1.8rem;
+      cursor: pointer; transition: color .2s; line-height: 1;
+    }
+    #lightbox-close:hover { color: #fff; }
+    #lightbox-prev, #lightbox-next {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      color: #fff; font-size: 1.5rem; width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background .2s;
+    }
+    #lightbox-prev { left: 1rem; }
+    #lightbox-next { right: 1rem; }
+    #lightbox-prev:hover, #lightbox-next:hover { background: rgba(255,255,255,.18); }
+    .g-item { cursor: pointer; }
+
+    /* ─── GAME: COMBO & SPECIAL ──────── */
+    .combo-indicator {
+      position: absolute; top: 30px; right: 12px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.1rem; letter-spacing: .1em; color: #FFD700;
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .combo-indicator.active { opacity: 1; }
+
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<!-- SEASONAL BANNER — editujte DAILY_FLAVORS v JS níže -->
+<div id="seasonal-banner">
+  <span class="banner-label">🍦 Dnes máme</span>
+  <span class="banner-flavors" id="banner-flavors"></span>
+  <button class="banner-close" onclick="closeBanner()" aria-label="Zavřít">✕</button>
+</div>
+
+<!-- BACK TO TOP -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Nahoru">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox(event)">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button id="lightbox-prev" onclick="lbNav(-1);event.stopPropagation()">‹</button>
+  <img id="lightbox-img" src="" alt="" style="display:none">
+  <div id="lightbox-placeholder"></div>
+  <button id="lightbox-next" onclick="lbNav(1);event.stopPropagation()">›</button>
+</div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-nail">
+    <svg viewBox="0 0 44 84" xmlns="http://www.w3.org/2000/svg" width="36" height="68">
+      <rect x="1" y="1" width="42" height="13" rx="2.5" fill="#b8bcc8"/>
+      <rect x="4" y="4" width="36" height="7" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+      <rect x="18.5" y="14" width="7" height="54" rx="1" fill="#b8bcc8"/>
+      <path d="M18.5,68 L25.5,68 L22,83 Z" fill="#b8bcc8"/>
+    </svg>
+  </div>
+  <div class="loader-name">U Hřebíků</div>
+  <div class="loader-bar"></div>
+  <div class="loader-sub">Zmrzlina · Stánek</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">U Hřebíků</a>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Galerie</a></li>
+    <li><a href="#hours">Provozní doba</a></li>
+    <li><a href="#map-section">Kde jsme</a></li>
+    <li><a href="#game-section">Hra</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Otevřít menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#menu"        onclick="toggleMenu()">Menu</a>
+  <a href="#gallery"     onclick="toggleMenu()">Galerie</a>
+  <a href="#hours"       onclick="toggleMenu()">Provozní doba</a>
+  <a href="#map-section" onclick="toggleMenu()">Kde jsme</a>
+  <a href="#game-section"onclick="toggleMenu()">Hra</a>
+  <div class="nav-social">
+    <a href="https://www.instagram.com/uhrebiku" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/></svg>
+    </a>
+    <a href="https://www.facebook.com/uhrebiku" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-dots"></div>
+  <div class="logo-area">
+
+    <!--
+      ╔══════════════════════════════════╗
+      ║  LOGO — nahraďte tento blok:     ║
+      ║  <img src="logo.png"             ║
+      ║       alt="U Hřebíků"            ║
+      ║       style="width:110px;        ║
+      ║       margin:0 auto 2rem;        ║
+      ║       display:block;">           ║
+      ╚══════════════════════════════════╝
+    -->
+    <div class="logo-wrap">
+      <svg viewBox="0 0 44 84" xmlns="http://www.w3.org/2000/svg" width="36" height="68" aria-label="Hřebík">
+        <!-- hlava hřebíku -->
+        <rect x="1" y="1" width="42" height="13" rx="2.5" fill="#b8bcc8"/>
+        <rect x="4" y="4" width="36" height="7" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+        <!-- dřík -->
+        <rect x="18.5" y="14" width="7" height="54" rx="1" fill="#b8bcc8"/>
+        <!-- hrot -->
+        <path d="M18.5,68 L25.5,68 L22,83 Z" fill="#b8bcc8"/>
+      </svg>
+    </div>
+
+    <p class="hero-sub reveal stagger-1">Tečovice</p>
+    <h1 class="reveal stagger-2">U Hřebíků</h1>
+    <p class="hero-tagline reveal stagger-3">ZMRZLINA:STÁNEK</p>
+    <a href="#menu" class="btn-outline reveal stagger-4">Prohlédnout menu</a>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MENU -->
+<div id="menu" class="sec-full sec-bg">
+  <div class="sec-inner">
+    <div class="sec-head reveal">
+      <span class="sec-label">Co nabízíme</span>
+      <h2 class="sec-title">Menu</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="tabs reveal stagger-1">
+      <button class="tab on"  onclick="switchTab('zmrzlina',this)">🍦 Zmrzlina</button>
+      <button class="tab"     onclick="switchTab('jidlo',this)">🍟 Jídlo</button>
+      <button class="tab"     onclick="switchTab('kava',this)">☕ Káva</button>
+      <button class="tab"     onclick="switchTab('nealko',this)">🥤 Nealko</button>
+      <button class="tab"     onclick="switchTab('alko',this)">🍺 Alko</button>
+      <button class="tab"     onclick="switchTab('sladkosti',this)">🍬 Sladkosti</button>
+    </div>
+    <div id="panel-zmrzlina" class="panel on">
+      <p class="menu-note">Toto jsou všechny naše příchutě — v nabídce vždy rotujeme aktuální výběr.</p>
+      <div class="menu-grid"></div>
+    </div>
+    <div id="panel-jidlo"     class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-kava"      class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-nealko"    class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-alko"      class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-sladkosti" class="panel"><div class="menu-grid"></div></div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<section id="gallery" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Naše místo</span>
+    <h2 class="sec-title">Galerie</h2>
+    <div class="divider"></div>
+  </div>
+  <!--
+    Jak přidat fotky:
+    Nahraďte každý .g-ph blok tagem <img src="vase-foto.jpg" alt="popis">
+    Fotky umístěte do stejné složky jako index.html
+  -->
+  <div class="gallery-grid reveal stagger-1">
+    <div class="g-item" onclick="openLightbox(0)"><img src="foto1.jpg" alt="Stánek U Hřebíků — exteriér, Tečovice"></div>
+    <div class="g-item" onclick="openLightbox(1)"><img src="foto2.jpg" alt="Interiér stánku — výběr zmrzliny a toppingů"></div>
+    <div class="g-item" onclick="openLightbox(2)"><img src="foto3.jpg" alt="Kopečková zmrzlina v kornoutu"></div>
+    <div class="g-item" onclick="openLightbox(3)"><img src="foto4.jpg" alt="Platební možnosti — bezkontaktně, kartou"></div>
+    <div class="g-item" onclick="openLightbox(4)"><img src="foto5.jpg" alt="Pohár zmrzliny s věrnostní kartičkou"></div>
+  </div>
+</section>
+
+<!-- HOURS -->
+<section id="hours" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Kdy nás navštívit</span>
+    <h2 class="sec-title">Provozní doba</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="hours-box reveal stagger-1">
+    <div class="h-row">
+      <span class="h-day">Pondělí – Čtvrtek</span>
+      <span class="h-time">14:00 – 18:00</span>
+    </div>
+    <div class="h-row">
+      <span class="h-day">Pátek – Sobota</span>
+      <span class="h-time">13:00 – 20:00</span>
+    </div>
+    <div class="h-row">
+      <span class="h-day">Neděle</span>
+      <span class="h-time">13:00 – 18:00</span>
+    </div>
+  </div>
+  <p class="hours-note">Otevírací doba se může měnit — sledujte nás na sociálních sítích.</p>
+</section>
+
+<!-- MAP -->
+<section id="map-section" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Najdete nás</span>
+    <h2 class="sec-title">Kde jsme</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="map-wrap reveal">
+    <iframe
+      src="https://maps.google.com/maps?q=Tečovice+65,+763+02+Tečovice&z=16&output=embed"
+      loading="lazy" title="Mapa — Tečovice 65" style="border:0;" allowfullscreen></iframe>
+    <div class="map-card">
+      <div class="map-name">U Hřebíků</div>
+      <div class="map-addr">Tečovice 65, 763 02</div>
+      <a class="map-nav-btn"
+         href="https://www.google.com/maps/dir/?api=1&destination=Tečovice+65,+763+02+Tečovice"
+         target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Navigovat
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<div id="game-section" class="sec-full sec-bg">
+  <div class="sec-inner">
+    <div class="sec-head reveal">
+      <span class="sec-label">Zábava pro celou rodinu</span>
+      <h2 class="sec-title">Chyť kopeček!</h2>
+      <div class="divider"></div>
+    </div>
+    <p class="game-desc">Chytej padající kopečky zmrzliny do kornoutu.<br>
+      Pohybuj šipkami, myší nebo dotykem.<br>Nezmeškej tři kopečky!</p>
+
+    <div class="stats">
+      <div>
+        <div class="stat-val" id="sc">0</div>
+        <div class="stat-lbl">Skóre</div>
+      </div>
+      <div>
+        <div class="stat-val" id="lv">❤️❤️❤️</div>
+        <div class="stat-lbl">Životy</div>
+      </div>
+      <div>
+        <div class="stat-val" id="lvl">1</div>
+        <div class="stat-lbl">Level</div>
+      </div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="gc" width="420" height="520"></canvas>
+      <div class="combo-indicator" id="combo-indicator">COMBO ×0</div>
+      <div class="govl" id="govl">
+        <div class="govl-title" id="ovl-title">U Hřebíků</div>
+        <div class="govl-score" id="ovl-score">Připrav se chytat kopečky! 🍦</div>
+        <input class="name-input" id="pname" placeholder="Tvoje jméno" maxlength="15">
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;">
+          <button class="btn-outline" id="ovl-btn" onclick="startGame()">Začít hru</button>
+          <button class="btn-outline btn-exit" id="ovl-exit" onclick="saveAndExit()" style="display:none;">Uložit &amp; ukončit</button>
+          <button class="btn-outline" id="ovl-share" onclick="openShare()" style="display:none;">📲 Sdílet skóre</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-btns">
+      <button class="btn-outline" onclick="startGame()">Nová hra</button>
+    </div>
+
+    <div class="lb">
+      <h3 class="lb-heading">Žebříček nejlepších</h3>
+      <div id="lb-list"></div>
+      <button class="lb-more-btn" id="lb-more-btn" onclick="toggleLBMore()" style="display:none;">
+        Zobrazit další
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-name">U Hřebíků</p>
+  <div class="footer-contacts">
+    <a href="tel:+420777608100" class="footer-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.29 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l.81-.81a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      777 608 100
+    </a>
+    <span class="footer-sep">·</span>
+    <a href="/cdn-cgi/l/email-protection#2d44434b426d58455f484f444658034e57" class="footer-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      <span class="__cf_email__" data-cfemail="9bf2f5fdf4dbeef3e9fef9f2f0eeb5f8e1">[email&#160;protected]</span>
+    </a>
+    <span class="footer-sep">·</span>
+    <a href="https://www.facebook.com/uhrebiku" target="_blank" rel="noopener" class="footer-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      Facebook
+    </a>
+    <span class="footer-sep">·</span>
+    <a href="https://www.instagram.com/uhrebiku" target="_blank" rel="noopener" class="footer-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/></svg>
+      Instagram
+    </a>
+  </div>
+  <p class="footer-addr">Tečovice 65 &nbsp;·&nbsp; Po–Čt 14–18 &nbsp;·&nbsp; Pá–So 13–20 &nbsp;·&nbsp; Ne 13–18</p>
+  <p class="footer-operator">Provozovatel: Tempora Bona s.r.o.</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ─────────────────────────────────────────
+   MENU DATA
+───────────────────────────────────────── */
+const MENU = {
+  zmrzlina: [
+    'Vanilka','Čokoláda','Slaný karamel','Malina','Dubajská','Pistáciová',
+    'Mango','Dračí ovoce','Šmoula','Citrón','Pomeranč','Borůvka','Unicorn',
+    'Cookies','Stracciatella','Šreck','Jahoda RAW s liči',
+    'Jogurt Prolévaný Ovocem','Lesní plody','Cheesecake','Meruňka',
+    'Rakytník','Vlašský ořech','Maková','Medový Perníček','Perník s povidly',
+    'Krupicová kaše','Dýně s kardamonem','Banán s čokoládou',
+    'Pistácie pesto','Vanilka Nutella','Tříšť','Praskací lízátko',
+    'Černý kornoutek','Termobox'
+  ],
+  jidlo: [
+    'Hranolky Malé 150g','Hranolky Velké 200g',
+    'Hranolky Batátové Malé 150g','Hranolky Batátové Velké 200g',
+    'Vafle na špejli','Párek v rohlíku','Párek v bagetce',
+    'Palačinka s náplní','Cyrilovy Brambůrky 100g','Tyčky Bohemia Hradecké'
+  ],
+  kava: ['Espresso / Lungo','Cappuccino','Ledová káva','Ledové latte','Affogato','Grog'],
+  nealko: [
+    'Coca-Cola','Coca-Cola Zero','Red Bull','Red Bull Light',
+    'Fuze Tea Broskev a Ibišek','Capri-Sun',
+    'Birell Active Mango a Citrón','Birell Active Pomelo a Grep','Birell Světlý',
+    'Limonáda Ananas+Kiwi','Limonáda Grep+Bezinka',
+    'Limonáda Lesní Směs','Limonáda Mango+Meruňka',
+    'Targa Florio Citrón','Targa Florio Pomeranč',
+    'Targa Florio Tonic','Targa Florio Tonic Rosa',
+    'Jupík Aqua Lesní ovoce','Jupík Aqua Malina',
+    'Kubík Water Jablko','Kubík Water Jahoda',
+    'Royal Crown Cola','ZONka Pomeranč','Voda balená 0,5l'
+  ],
+  alko: [
+    'Aperol Spritz','Gin Tonic','Cuba Libre',
+    'Prosecco 0,1l','Prosecco 0,2l',
+    'Víno 0,1l','Víno 0,75l','Víno Štěpánek',
+    'Pilsner Urquell 0,33l','Plzeň Pilsner plech 0,5l',
+    'Frisco Jablečný Cider','Frisco Jahodové Daiquiri',
+    'Rum Republica','Vodka Finlandia','Gin Beefeater',
+    'Moravská Švestka','Burčák 0,1l'
+  ],
+  sladkosti: ['Myš Trolli','Pendrek']
+};
+
+Object.entries(MENU).forEach(([cat, items]) => {
+  const g = document.querySelector(`#panel-${cat} .menu-grid`);
+  items.forEach(name => {
+    const d = document.createElement('div');
+    d.className = 'menu-item';
+    d.innerHTML = `<span class="dot"></span><span class="item-name">${name}</span>`;
+    g.appendChild(d);
+  });
+});
+
+function switchTab(cat, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(`panel-${cat}`).classList.add('on');
+}
+
+/* ─────────────────────────────────────────
+   GAME
+───────────────────────────────────────── */
+const C  = document.getElementById('gc');
+const cx = C.getContext('2d');
+const OVL= document.getElementById('govl');
+
+// Responsive canvas width
+(function resizeCanvas() {
+  const maxW = Math.min(420, window.innerWidth - 32);
+  C.style.width  = maxW + 'px';
+  C.style.height = (maxW * 520/420) + 'px';
+})();
+
+const FLAVORS = [
+  { n:'Vanilka',         c:'#FFF8DC' },
+  { n:'Čokoláda',        c:'#6B3A2A' },
+  { n:'Malina',          c:'#E83F6F' },
+  { n:'Pistáciová',      c:'#7EB77F' },
+  { n:'Mango',           c:'#FFB347' },
+  { n:'Borůvka',         c:'#6A5ACD' },
+  { n:'Slaný karamel',   c:'#C8860A' },
+  { n:'Citron',          c:'#FFF176' },
+  { n:'Šmoula',          c:'#4169E1' },
+  { n:'Unicorn',         c:'#F9A8D4' },
+  { n:'Dračí ovoce',     c:'#FF6B9D' },
+];
+
+// ── LEVEL CONFIG ─────────────────────────────
+// každý level: { threshold: kopečků k dosažení, spawnRate: frames mezi spawny,
+//               baseSpeed: základní rychlost, wobble: síla kmitání,
+//               multi: šance na dvojitý spawn (0–1) }
+const LEVELS = [
+  { threshold:0,  spawnRate:88, baseSpeed:2.2, wobble:.4,  multi:0   }, // 1
+  { threshold:8,  spawnRate:76, baseSpeed:2.7, wobble:.5,  multi:0   }, // 2
+  { threshold:18, spawnRate:64, baseSpeed:3.2, wobble:.7,  multi:.15 }, // 3
+  { threshold:30, spawnRate:52, baseSpeed:3.7, wobble:.9,  multi:.25 }, // 4
+  { threshold:44, spawnRate:42, baseSpeed:4.3, wobble:1.1, multi:.35 }, // 5
+  { threshold:60, spawnRate:34, baseSpeed:5.0, wobble:1.3, multi:.45 }, // 6
+  { threshold:80, spawnRate:26, baseSpeed:5.8, wobble:1.5, multi:.55 }, // 7
+  { threshold:104,spawnRate:20, baseSpeed:6.8, wobble:1.8, multi:.65 }, // 8
+];
+
+function getLevelCfg(lvl) {
+  return LEVELS[Math.min(lvl-1, LEVELS.length-1)];
+}
+function getNextThreshold(lvl) {
+  const next = LEVELS[Math.min(lvl, LEVELS.length-1)];
+  return next ? next.threshold : Infinity;
+}
+
+let G = {};
+let vfx = [];
+let particles = [];
+
+function initGame() {
+  G = {
+    run:false, score:0, lives:3, level:1,
+    scoops:[], cone:{ x:C.width/2 }, keys:{}, mx:null,
+    frame:0, levelFlash:0,
+    pendingSave:false,
+    playerName: G.playerName || '',
+    combo: 0,        // po sobě jdoucí úspěšné chycení
+    comboMax: 0,     // max combo v kole
+  };
+  particles = [];
+}
+initGame();
+
+function spawnScoop(offsetX) {
+  const cfg = getLevelCfg(G.level);
+  const x = offsetX !== undefined ? offsetX : 28 + Math.random()*(C.width-56);
+
+  // speciální typy: zlato (5% šance od lvl2), bomba (4% od lvl3)
+  const rnd = Math.random();
+  let special = null;
+  if(G.level >= 3 && rnd < 0.04){
+    special = 'bomb';
+  } else if(G.level >= 2 && rnd < 0.09){
+    special = 'gold';
+  }
+
+  const f = special === 'gold'
+    ? { n:'Zlatý!', c:'#FFD700' }
+    : special === 'bomb'
+    ? { n:'💣 Bomba!', c:'#222' }
+    : FLAVORS[Math.floor(Math.random()*FLAVORS.length)];
+
+  G.scoops.push({
+    x, y:-22, r: special === 'bomb' ? 22 : 20,
+    vy: cfg.baseSpeed + Math.random()*0.5,
+    f, special,
+    w: Math.random()*Math.PI*2,
+    wobbleStr: cfg.wobble,
+    drip: !special && Math.random() > .5,
+    dripLen: 6 + Math.random() * 10,
+  });
+}
+
+function hexToRgb(h) {
+  const r=parseInt(h.slice(1,3),16), g=parseInt(h.slice(3,5),16), b=parseInt(h.slice(5,7),16);
+  return [r,g,b];
+}
+function lighten(h,a) {
+  const [r,g,b]=hexToRgb(h);
+  return `rgb(${Math.min(255,r+a)},${Math.min(255,g+a)},${Math.min(255,b+a)})`;
+}
+
+function drawBg() {
+  cx.clearRect(0,0,C.width,C.height);
+  cx.fillStyle='#030303'; cx.fillRect(0,0,C.width,C.height);
+  cx.strokeStyle='rgba(184,188,200,.04)'; cx.lineWidth=1;
+  for(let x=0;x<C.width;x+=38){ cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,C.height);cx.stroke(); }
+  for(let y=0;y<C.height;y+=38){ cx.beginPath();cx.moveTo(0,y);cx.lineTo(C.width,y);cx.stroke(); }
+  cx.strokeStyle='rgba(184,188,200,.18)'; cx.lineWidth=1;
+  cx.beginPath(); cx.moveTo(0,C.height-8); cx.lineTo(C.width,C.height-8); cx.stroke();
+}
+
+function drawCone(x) {
+  const cy = C.height - 16, hw = 28, ht = 72;
+  const top = cy - ht + 16;
+
+  // stín kornoutu
+  cx.beginPath();
+  cx.moveTo(x - hw + 4, top + 4); cx.lineTo(x + hw + 4, top + 4); cx.lineTo(x + 4, cy + 4);
+  cx.closePath();
+  cx.fillStyle = 'rgba(0,0,0,.22)'; cx.fill();
+
+  // telo kornoutu
+  cx.beginPath();
+  cx.moveTo(x - hw, top); cx.lineTo(x + hw, top); cx.lineTo(x, cy);
+  cx.closePath();
+  const cg = cx.createLinearGradient(x - hw, 0, x + hw, 0);
+  cg.addColorStop(0, '#5c3a1e'); cg.addColorStop(.35, '#a0622a');
+  cg.addColorStop(.65, '#c8853a'); cg.addColorStop(1, '#5c3a1e');
+  cx.fillStyle = cg; cx.fill();
+
+  // waffle pattern — horizontální
+  cx.strokeStyle = 'rgba(0,0,0,.3)'; cx.lineWidth = 1;
+  for (let i = 1; i < 6; i++) {
+    const t = i / 6, py = top + (cy - top) * t;
+    const w = hw * (1 - t * .92);
+    cx.beginPath(); cx.moveTo(x - w, py); cx.lineTo(x + w, py); cx.stroke();
+  }
+  // waffle — diagonály levo
+  cx.strokeStyle = 'rgba(0,0,0,.18)'; cx.lineWidth = .8;
+  for (let i = -3; i < 6; i++) {
+    const py1 = top + i * 14, py2 = py1 + 22;
+    const t1 = (py1 - top) / (cy - top), t2 = (py2 - top) / (cy - top);
+    const w1 = hw * (1 - Math.max(0, Math.min(1, t1)) * .92);
+    const w2 = hw * (1 - Math.max(0, Math.min(1, t2)) * .92);
+    cx.beginPath();
+    cx.moveTo(x - w1, Math.max(top, py1));
+    cx.lineTo(x - w2, Math.min(cy, py2)); cx.stroke();
+    cx.beginPath();
+    cx.moveTo(x + w1, Math.max(top, py1));
+    cx.lineTo(x + w2, Math.min(cy, py2)); cx.stroke();
+  }
+
+  // rim (elipsa nahoře)
+  const rimGrad = cx.createRadialGradient(x, top - 2, 2, x, top, hw);
+  rimGrad.addColorStop(0, '#e0a060'); rimGrad.addColorStop(1, '#8a5020');
+  cx.beginPath(); cx.ellipse(x, top, hw, 9, 0, 0, Math.PI * 2);
+  cx.fillStyle = rimGrad; cx.fill();
+  cx.strokeStyle = 'rgba(255,255,255,.12)'; cx.lineWidth = 1;
+  cx.beginPath(); cx.ellipse(x, top - 2, hw * .7, 5, 0, 0, Math.PI * 2);
+  cx.stroke();
+}
+
+function drawScoop(s) {
+  const r = s.r;
+
+  if(s.special === 'bomb'){
+    cx.beginPath(); cx.arc(s.x, s.y, r+6, 0, Math.PI*2);
+    cx.fillStyle = 'rgba(255,30,30,.1)'; cx.fill();
+    cx.beginPath(); cx.arc(s.x, s.y, r, 0, Math.PI*2);
+    const bg2 = cx.createRadialGradient(s.x-4, s.y-4, 2, s.x, s.y, r);
+    bg2.addColorStop(0, '#666'); bg2.addColorStop(1, '#111');
+    cx.fillStyle = bg2; cx.fill();
+    cx.fillStyle = '#fff'; cx.font = `${r}px serif`; cx.textAlign = 'center';
+    cx.fillText('💣', s.x, s.y + r*.35);
+    return;
+  }
+
+  // stín
+  cx.beginPath(); cx.ellipse(s.x + 4, s.y + 5, r, r * .65, 0, 0, Math.PI * 2);
+  cx.fillStyle = 'rgba(0,0,0,.25)'; cx.fill();
+
+  // zlatý glow
+  if(s.special === 'gold'){
+    cx.beginPath(); cx.arc(s.x, s.y, r+6, 0, Math.PI*2);
+    cx.fillStyle = 'rgba(255,215,0,.15)'; cx.fill();
+    cx.beginPath(); cx.arc(s.x, s.y, r+2, 0, Math.PI*2);
+    cx.strokeStyle = 'rgba(255,215,0,.6)'; cx.lineWidth = 1.5; cx.stroke();
+  }
+
+  // kulička
+  cx.beginPath(); cx.arc(s.x, s.y, r, 0, Math.PI * 2);
+  const bg = cx.createRadialGradient(s.x - r * .3, s.y - r * .3, r * .05, s.x, s.y, r);
+  bg.addColorStop(0, lighten(s.f.c, 70));
+  bg.addColorStop(.5, lighten(s.f.c, 20));
+  bg.addColorStop(1, darken(s.f.c, 20));
+  cx.fillStyle = bg; cx.fill();
+
+  // textura
+  cx.strokeStyle = 'rgba(0,0,0,.06)'; cx.lineWidth = 2;
+  cx.beginPath(); cx.arc(s.x + 2, s.y + 2, r * .55, 0, Math.PI * 2); cx.stroke();
+  cx.beginPath(); cx.arc(s.x - 1, s.y - 1, r * .78, 0, Math.PI * 2); cx.stroke();
+
+  // drip
+  if (s.drip) {
+    cx.beginPath();
+    cx.moveTo(s.x - 4, s.y + r - 4);
+    cx.bezierCurveTo(s.x - 5, s.y + r + 6, s.x - 2, s.y + r + s.dripLen, s.x, s.y + r + s.dripLen);
+    cx.bezierCurveTo(s.x + 2, s.y + r + s.dripLen, s.x + 5, s.y + r + 6, s.x + 4, s.y + r - 4);
+    cx.fillStyle = lighten(s.f.c, 15); cx.fill();
+  }
+
+  // highlights
+  cx.beginPath(); cx.ellipse(s.x - r * .32, s.y - r * .3, r * .28, r * .18, -0.5, 0, Math.PI * 2);
+  cx.fillStyle = 'rgba(255,255,255,.45)'; cx.fill();
+  cx.beginPath(); cx.arc(s.x - r * .18, s.y - r * .42, r * .08, 0, Math.PI * 2);
+  cx.fillStyle = 'rgba(255,255,255,.7)'; cx.fill();
+
+  // název
+  cx.fillStyle = s.special === 'gold' ? 'rgba(80,50,0,.85)' : 'rgba(255,255,255,.8)';
+  cx.font = `bold 8px Raleway, sans-serif`; cx.textAlign = 'center';
+  cx.fillText(s.f.n, s.x, s.y + 3);
+}
+
+// helper: ztmavení barvy
+function darken(h, a) {
+  const [r,g,b] = hexToRgb(h);
+  return `rgb(${Math.max(0,r-a)},${Math.max(0,g-a)},${Math.max(0,b-a)})`;
+}
+
+// ── PARTICLE SYSTEM ──────────────────────
+
+function spawnParticles(x, y, color, count = 14) {
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 / count) * i + Math.random() * .4;
+    const speed = 2 + Math.random() * 4;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      r: 3 + Math.random() * 4,
+      color,
+      life: 35 + Math.random() * 15,
+      maxLife: 50,
+      gravity: .18,
+    });
+  }
+  // extra sparkles
+  for (let i = 0; i < 6; i++) {
+    particles.push({
+      x: x + (Math.random() - .5) * 30,
+      y: y + (Math.random() - .5) * 20,
+      vx: (Math.random() - .5) * 3,
+      vy: -2 - Math.random() * 3,
+      r: 1.5,
+      color: '#ffffff',
+      life: 20 + Math.random() * 15,
+      maxLife: 35,
+      gravity: .1,
+      sparkle: true,
+    });
+  }
+}
+
+function drawParticles() {
+  particles = particles.filter(p => {
+    p.x += p.vx; p.y += p.vy; p.vy += p.gravity;
+    p.vx *= .96; p.life--;
+    const alpha = p.life / p.maxLife;
+    cx.globalAlpha = alpha;
+    if (p.sparkle) {
+      // zvězdička
+      cx.fillStyle = p.color;
+      cx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const a = (Math.PI / 2) * i;
+        const r1 = p.r * 2, r2 = p.r * .6;
+        if (i === 0) cx.moveTo(p.x + r1 * Math.cos(a), p.y + r1 * Math.sin(a));
+        else cx.lineTo(p.x + r1 * Math.cos(a), p.y + r1 * Math.sin(a));
+        cx.lineTo(p.x + r2 * Math.cos(a + Math.PI/4), p.y + r2 * Math.sin(a + Math.PI/4));
+      }
+      cx.closePath(); cx.fill();
+    } else {
+      cx.beginPath(); cx.arc(p.x, p.y, p.r * alpha + .5, 0, Math.PI * 2);
+      cx.fillStyle = p.color; cx.fill();
+    }
+    cx.globalAlpha = 1;
+    return p.life > 0;
+  });
+}
+
+function loop() {
+  if(!G.run) return;
+  G.frame++;
+
+  const cfg = getLevelCfg(G.level);
+
+  // pohyb kornoutu (rychlejší na vyšších levelech)
+  const spd = 7 + G.level * 0.25;
+  if(G.keys.ArrowLeft||G.keys.a)  G.cone.x=Math.max(28,G.cone.x-spd);
+  if(G.keys.ArrowRight||G.keys.d) G.cone.x=Math.min(C.width-28,G.cone.x+spd);
+  if(G.mx!==null){
+    G.cone.x += (G.mx-G.cone.x)*0.16;
+    G.cone.x=Math.max(28,Math.min(C.width-28,G.cone.x));
+  }
+
+  // spawn + šance na double
+  if(G.frame%cfg.spawnRate===0){
+    spawnScoop();
+    if(Math.random()<cfg.multi) spawnScoop(28+Math.random()*(C.width-56));
+  }
+
+  // update scoops
+  const coneTop=C.height-82;
+  G.scoops=G.scoops.filter(s=>{
+    s.y+=s.vy;
+    s.x+=Math.sin(s.w+s.y*.06)*s.wobbleStr;
+    s.x=Math.max(s.r,Math.min(C.width-s.r,s.x));
+    const dx=Math.abs(s.x-G.cone.x);
+    if(s.y+s.r>=coneTop && s.y-s.r<coneTop+22 && dx<28){
+
+      if(s.special === 'bomb'){
+        // 💣 BOMBA — ztrácíš život!
+        G.combo = 0; updateComboUI();
+        G.lives--;
+        updateLives();
+        spawnParticles(s.x, s.y, '#ff2244', 20);
+        vfx.push({type:'pts',x:s.x,y:s.y,c:'#ff2244',life:35,txt:'💣 -1!'});
+        playSound('miss');
+        if(G.lives<=0){ gameOver(); return false; }
+        return false;
+      }
+
+      // normální nebo zlatý kopeček
+      const pts = s.special === 'gold' ? 3 : 1;
+      G.score += pts;
+      G.combo++;
+      if(G.combo > G.comboMax) G.comboMax = G.combo;
+      document.getElementById('sc').textContent = G.score;
+      updateComboUI();
+
+      // combo bonus každých 5
+      if(G.combo > 1 && G.combo % 5 === 0){
+        G.score += 2;
+        document.getElementById('sc').textContent = G.score;
+        vfx.push({type:'pts',x:C.width/2,y:C.height/2,c:'#FFD700',life:45,txt:`COMBO ×${G.combo}! +2`});
+        spawnParticles(s.x, s.y, '#FFD700', 22);
+        playSound('levelup');
+      } else {
+        const txt = s.special === 'gold' ? '+3 ✨' : '+1';
+        const col = s.special === 'gold' ? '#FFD700' : s.f.c;
+        vfx.push({type:'pts',x:s.x,y:s.y,c:col,life:28,txt});
+        spawnParticles(s.x, s.y, col, s.special === 'gold' ? 20 : 14);
+        playSound('catch');
+      }
+
+      // level up check
+      const newLevel = 1 + LEVELS.filter(l=>G.score>=l.threshold).length - 1;
+      if(newLevel > G.level){
+        G.level = newLevel;
+        document.getElementById('lvl').textContent = G.level;
+        triggerLevelUp(G.level);
+      }
+      return false;
+    }
+    if(s.y>C.height+30){
+      if(s.special !== 'bomb'){
+        // bombu minout = OK, normální kopeček = ztrácíš život
+        G.combo = 0; updateComboUI();
+        G.lives--;
+        updateLives();
+        if(G.lives<=0){ gameOver(); return false; }
+        vfx.push({type:'pts',x:s.x,y:C.height-60,c:'#ff4466',life:28,txt:'✗'});
+        playSound('miss');
+      }
+      return false;
+    }
+    return true;
+  });
+
+  // ── KRESLENÍ ────────────────────────────
+  drawBg();
+
+  // zlatý záblesk při level up
+  if(G.levelFlash>0){
+    cx.globalAlpha=(G.levelFlash/45)*0.20;
+    cx.fillStyle='#b8bcc8';
+    cx.fillRect(0,0,C.width,C.height);
+    cx.globalAlpha=1;
+    G.levelFlash--;
+  }
+
+  G.scoops.forEach(drawScoop);
+  drawParticles();
+  drawCone(G.cone.x);
+  drawProgressBar();
+
+  // VFX
+  vfx=vfx.filter(e=>{
+    e.life--;
+    if(e.type==='pts'){
+      cx.globalAlpha=e.life/28;
+      cx.fillStyle=e.c;
+      cx.font=`${13+(28-e.life)*0.4}px 'Cormorant Garamond',serif`;
+      cx.textAlign='center';
+      cx.fillText(e.txt,e.x,e.y-(28-e.life)*1.8);
+      cx.globalAlpha=1;
+    } else if(e.type==='levelup'){
+      const p=e.life/60;
+      const alpha=p<.15 ? p/.15 : p>.7 ? (p-.7)/.3*(-1)+1 : 1;
+      const bw=200, bh=64, bx=(C.width-bw)/2, by=(C.height-bh)/2;
+      cx.globalAlpha=alpha;
+      cx.fillStyle='rgba(8,8,8,.92)'; cx.fillRect(bx,by,bw,bh);
+      cx.strokeStyle='#b8bcc8'; cx.lineWidth=1.5; cx.strokeRect(bx,by,bw,bh);
+      cx.fillStyle='rgba(184,188,200,.8)';
+      cx.font='600 10px Raleway,sans-serif'; cx.textAlign='center';
+      cx.fillText('LEVEL UP', C.width/2, by+22);
+      cx.fillStyle='#f0ede6';
+      cx.font=`300 28px 'Cormorant Garamond',serif`;
+      cx.fillText(e.msg, C.width/2, by+52);
+      cx.globalAlpha=1;
+    }
+    return e.life>0;
+  });
+
+  requestAnimationFrame(loop);
+}
+
+function triggerLevelUp(lvl){
+  G.levelFlash=45;
+  G.scoops=[];
+  playSound('levelup');
+  const subtitles=['','','Rychleji!','Dvojité!','Chaos!','Šílenství!','Rychlost!','Maximum!'];
+  const sub=subtitles[lvl-1]||'';
+  vfx.push({type:'levelup', life:60, msg:`Level ${lvl}${sub?' · '+sub:''}`});
+}
+
+function drawProgressBar(){
+  const nextThr = getNextThreshold(G.level);
+  const prevThr = LEVELS[G.level-1] ? LEVELS[G.level-1].threshold : 0;
+  const bw=C.width-40, bh=4, bx=20, by=10;
+
+  if(nextThr===Infinity){
+    cx.fillStyle='rgba(184,188,200,.65)';
+    cx.font='9px Raleway,sans-serif'; cx.textAlign='center';
+    cx.fillText('⭐ MAX LEVEL', C.width/2, 20);
+    return;
+  }
+
+  const progress=Math.min(1,(G.score-prevThr)/(nextThr-prevThr));
+
+  // track
+  cx.fillStyle='rgba(184,188,200,.12)';
+  cx.beginPath(); cx.roundRect(bx,by,bw,bh,2); cx.fill();
+  // fill
+  if(progress>0){
+    const grd=cx.createLinearGradient(bx,0,bx+bw*progress,0);
+    grd.addColorStop(0,'rgba(184,188,200,.45)');
+    grd.addColorStop(1,'rgba(184,188,200,1)');
+    cx.fillStyle=grd;
+    cx.beginPath(); cx.roundRect(bx,by,bw*progress,bh,2); cx.fill();
+  }
+  // label
+  cx.fillStyle='rgba(184,188,200,.5)';
+  cx.font='8px Raleway,sans-serif'; cx.textAlign='right';
+  cx.fillText(`→ Level ${G.level+1} za ${nextThr-G.score} 🍦`, C.width-20, by+bh+10);
+}
+
+function updateLives(){
+  document.getElementById('lv').textContent='❤️'.repeat(Math.max(0,G.lives))+'🖤'.repeat(Math.max(0,3-G.lives));
+}
+function updateComboUI(){
+  const el = document.getElementById('combo-indicator');
+  if(!el) return;
+  if(G.combo >= 3){ el.textContent=`COMBO ×${G.combo}`; el.classList.add('active'); }
+  else { el.classList.remove('active'); }
+}
+
+function startGame(){
+  // ulož skóre s uloženým jménem pokud pending
+  if(G.pendingSave){
+    const nm = G.playerName || document.getElementById('pname').value.trim() || 'Anonym';
+    saveScore(nm, G.score);
+    G.pendingSave = false;
+  }
+  // zapamatuj jméno pokud bylo zadáno na start obrazovce
+  const nameVal = document.getElementById('pname').value.trim();
+  if(nameVal) G.playerName = nameVal;
+
+  initGame();
+  document.getElementById('sc').textContent='0';
+  document.getElementById('lvl').textContent='1';
+  updateLives();
+  document.getElementById('ovl-title').textContent='U Hřebíků';
+  document.getElementById('ovl-score').textContent='Připrav se chytat kopečky! 🍦';
+  document.getElementById('ovl-btn').textContent='Začít hru';
+  document.getElementById('ovl-exit').style.display='none';
+  document.getElementById('ovl-share').style.display='none';
+  // zobraz name input na start obrazovce
+  const pname = document.getElementById('pname');
+  pname.style.display = 'block';
+  pname.placeholder = 'Tvoje jméno';
+  if(G.playerName) pname.value = G.playerName;
+  closeShare();
+  OVL.style.display='none';
+  G.run=true;
+  requestAnimationFrame(loop);
+}
+
+function gameOver(){
+  G.run=false; G.pendingSave=true;
+  playSound('gameover');
+  OVL.style.display='flex';
+  document.getElementById('ovl-title').textContent='Konec hry!';
+  document.getElementById('ovl-score').textContent=`Tvoje skóre: ${G.score} kopečků 🍦`;
+
+  const pname = document.getElementById('pname');
+  if(G.playerName){
+    // jméno už známe — zobraz ho jen jako info, nechej skryté
+    pname.style.display = 'none';
+  } else {
+    pname.style.display = 'block';
+    pname.value = '';
+    pname.placeholder = 'Tvoje jméno';
+    pname.focus();
+  }
+  document.getElementById('ovl-btn').textContent = G.playerName ? `Hrát znovu (${G.playerName})` : 'Uložit & Hrát znovu';
+  document.getElementById('ovl-exit').style.display='inline-block';
+  document.getElementById('ovl-share').style.display='inline-block';
+  document.getElementById('share-preview').textContent=
+    `Chytil/a jsem ${G.score} kopečků zmrzliny\nu @uhrebiku! 🍦 Překonej mě!`;
+}
+
+function openShare(){
+  const text = getShareText();
+  document.getElementById('share-score-num').textContent = G.score;
+  document.getElementById('share-copy-text').value = text;
+  document.getElementById('share-hint').textContent = '';
+  const btn = document.getElementById('share-copy-btn');
+  btn.classList.remove('copied');
+  document.getElementById('copy-btn-label').textContent = 'Kopírovat';
+  document.getElementById('share-overlay').classList.add('open');
+}
+function closeShare(){
+  document.getElementById('share-overlay').classList.remove('open');
+}
+function getShareText(){
+  return `Chytil/a jsem ${G.score} kopečků zmrzliny u @uhrebiku! 🍦 Překonej moje skóre!`;
+}
+function copyShareText(){
+  const text = getShareText();
+  const btn = document.getElementById('share-copy-btn');
+  const lbl = document.getElementById('copy-btn-label');
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.classList.add('copied');
+    if(lbl) lbl.textContent = '✓ OK';
+    document.getElementById('share-hint').textContent = 'Text je ve schránce — vlož ho do příspěvku nebo story.';
+    setTimeout(()=>{
+      btn.classList.remove('copied');
+      if(lbl) lbl.textContent = 'Kopírovat';
+    }, 3000);
+  }).catch(()=>{
+    document.getElementById('share-hint').textContent = 'Zkopíruj text ručně — označ a Ctrl+C.';
+  });
+}
+function shareToFB(){
+  const url = encodeURIComponent('https://www.facebook.com/uhrebiku');
+  const win = window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=620,height=500,noopener');
+  if(!win || win.closed || typeof win.closed === 'undefined'){
+    document.getElementById('share-hint').textContent =
+      '⚠ Popup byl zablokován prohlížečem. Povol popupy, nebo zkopíruj text a sdílej ručně.';
+  } else {
+    document.getElementById('share-hint').textContent =
+      'Tip: zkopíruj text výše a vlož ho do příspěvku při sdílení.';
+  }
+}
+function shareToIG(){
+  const text = getShareText();
+  if(navigator.share){
+    navigator.share({ title:'U Hřebíků – moje skóre', text }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn = document.getElementById('share-copy-btn');
+      const lbl = document.getElementById('copy-btn-label');
+      btn.classList.add('copied');
+      if(lbl) lbl.textContent = '✓ Hotovo';
+      document.getElementById('share-hint').innerHTML =
+        '✓ Text zkopírován! Otevři <a href="https://www.instagram.com/uhrebiku" target="_blank">@uhrebiku na Instagramu</a> a vlož do příspěvku.';
+      setTimeout(()=>{ window.open('https://www.instagram.com/uhrebiku','_blank','noopener'); }, 700);
+    }).catch(()=>{
+      document.getElementById('share-copy-text').select();
+      document.getElementById('share-hint').textContent = 'Označ text výše a stiskni Ctrl+C, pak otevři Instagram.';
+    });
+  }
+}
+
+function saveAndExit(){
+  if(G.pendingSave){
+    const nm = G.playerName || document.getElementById('pname').value.trim() || 'Anonym';
+    saveScore(nm, G.score);
+    G.pendingSave = false;
+  }
+  document.getElementById('ovl-title').textContent = 'Díky za hru!';
+  document.getElementById('ovl-score').textContent = `Skóre uloženo: ${G.score} 🍦`;
+  document.getElementById('pname').style.display = 'none';
+  document.getElementById('ovl-btn').textContent = 'Hrát znovu';
+  document.getElementById('ovl-exit').style.display = 'none';
+}
+
+/* ─────────────────────────────────────────
+   ZVUKY (Web Audio API — bez externích souborů)
+───────────────────────────────────────── */
+let _audioCtx = null;
+function getACtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return _audioCtx;
+}
+
+function playSound(type){
+  try {
+    const ctx = getACtx();
+    if(ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+
+    if(type === 'catch'){
+      // veselý krátký "pop"
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + .06);
+      gain.gain.setValueAtTime(.18, now);
+      gain.gain.exponentialRampToValueAtTime(.001, now + .18);
+      osc.start(now); osc.stop(now + .18);
+
+    } else if(type === 'miss'){
+      // smutný "bloop"
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(280, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + .22);
+      gain.gain.setValueAtTime(.12, now);
+      gain.gain.exponentialRampToValueAtTime(.001, now + .25);
+      osc.start(now); osc.stop(now + .25);
+
+    } else if(type === 'levelup'){
+      // rychlá fanfára — 4 tóny
+      [0, .08, .16, .24].forEach((t, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'triangle';
+        const notes = [523, 659, 784, 1047];
+        osc.frequency.setValueAtTime(notes[i], now + t);
+        gain.gain.setValueAtTime(.14, now + t);
+        gain.gain.exponentialRampToValueAtTime(.001, now + t + .18);
+        osc.start(now + t); osc.stop(now + t + .2);
+      });
+
+    } else if(type === 'gameover'){
+      // klesající smutná melodie
+      [0, .18, .36, .58].forEach((t, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        const notes = [440, 370, 311, 220];
+        osc.frequency.setValueAtTime(notes[i], now + t);
+        gain.gain.setValueAtTime(.13, now + t);
+        gain.gain.exponentialRampToValueAtTime(.001, now + t + .28);
+        osc.start(now + t); osc.stop(now + t + .3);
+      });
+    }
+  } catch(e){ /* AudioContext nedostupný */ }
+}
+
+/* ─────────────────────────────────────────
+   LEADERBOARD
+───────────────────────────────────────── */
+const LB_PAGE = 10;  // zobrazeno ve výchozím stavu
+let lbShowAll = false;
+
+function getLB(){ try{ return JSON.parse(localStorage.getItem('hrebiky_lb')||'[]'); }catch{return[];} }
+
+function saveScore(name, score){
+  let lb = getLB();
+  lb.push({ name, score, d: new Date().toLocaleDateString('cs-CZ') });
+  lb.sort((a,b) => b.score - a.score);
+  lb = lb.slice(0, 50);  // ukládáme až 50 záznamů
+  localStorage.setItem('hrebiky_lb', JSON.stringify(lb));
+  lbShowAll = false;
+  renderLB();
+}
+
+function renderLB(){
+  const lb = getLB();
+  const el = document.getElementById('lb-list');
+  const moreBtn = document.getElementById('lb-more-btn');
+
+  if(!lb.length){
+    el.innerHTML = '<p class="lb-empty">Zatím žádné záznamy. Buď první!</p>';
+    if(moreBtn) moreBtn.style.display = 'none';
+    return;
+  }
+
+  el.innerHTML = lb.map((e, i) => {
+    const rc = i===0?'g': i===1?'s': i===2?'b':'';
+    const medal = i===0?'🥇': i===1?'🥈': i===2?'🥉': (i+1)+'.';
+    const hidden = (!lbShowAll && i >= LB_PAGE) ? ' hidden' : '';
+    return `<div class="lb-row${hidden}">
+      <span class="lb-rank ${rc}">${medal}</span>
+      <span class="lb-name">${e.name}</span>
+      <span class="lb-date">${e.d||''}</span>
+      <span class="lb-sc">${e.score}</span>
+    </div>`;
+  }).join('');
+
+  if(moreBtn){
+    if(lb.length > LB_PAGE){
+      moreBtn.style.display = 'block';
+      moreBtn.textContent = lbShowAll
+        ? 'Skrýt'
+        : `Zobrazit další (${lb.length - LB_PAGE})`;
+    } else {
+      moreBtn.style.display = 'none';
+    }
+  }
+}
+
+function toggleLBMore(){
+  lbShowAll = !lbShowAll;
+  renderLB();
+}
+
+/* ─────────────────────────────────────────
+   CONTROLS
+───────────────────────────────────────── */
+document.addEventListener('keydown',e=>{
+  G.keys[e.key]=true;
+  if(e.key.startsWith('Arrow')) e.preventDefault();
+});
+document.addEventListener('keyup',e=>{ G.keys[e.key]=false; });
+
+C.addEventListener('mousemove',e=>{
+  const r=C.getBoundingClientRect();
+  G.mx=(e.clientX-r.left)*(C.width/r.width);
+});
+C.addEventListener('mouseleave',()=>{ G.mx=null; });
+C.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const r=C.getBoundingClientRect();
+  G.mx=(e.touches[0].clientX-r.left)*(C.width/r.width);
+},{passive:false});
+C.addEventListener('touchend',()=>{ G.mx=null; });
+
+// Also allow pressing Enter in name input
+document.getElementById('pname').addEventListener('keydown',e=>{
+  if(e.key==='Enter') startGame();
+});
+
+// Fallback pro roundRect (starší prohlížeče)
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    this.beginPath();
+    this.moveTo(x+r,y);
+    this.lineTo(x+w-r,y);
+    this.quadraticCurveTo(x+w,y,x+w,y+r);
+    this.lineTo(x+w,y+h-r);
+    this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    this.lineTo(x+r,y+h);
+    this.quadraticCurveTo(x,y+h,x,y+h-r);
+    this.lineTo(x,y+r);
+    this.quadraticCurveTo(x,y,x+r,y);
+    this.closePath();
+    return this;
+  };
+}
+
+// ── LOADER ───────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+    // spustí hero reveal po zmizení loaderu
+    document.querySelectorAll('#hero .reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 120);
+    });
+  }, 900);
+});
+
+// ── SCROLL REVEAL ────────────────────────
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .reveal-left').forEach(el => {
+  // hero prvky řídí loader, ostatní IntersectionObserver
+  if(!el.closest('#hero')) revealObserver.observe(el);
+});
+
+/* ─────────────────────────────────────────
+   SEASONAL BANNER
+   ✏️  Upravte DAILY_FLAVORS pro dnešní nabídku
+───────────────────────────────────────── */
+const DAILY_FLAVORS = [
+  'Vanilka', 'Malina', 'Dubajská', 'Slaný karamel', 'Pistáciová'
+];
+
+(function initBanner(){
+  document.getElementById('banner-flavors').textContent = DAILY_FLAVORS.join(' · ');
+  const dismissed = sessionStorage.getItem('banner_dismissed');
+  if(!dismissed){
+    document.body.classList.add('has-banner');
+  } else {
+    document.getElementById('seasonal-banner').classList.add('hidden');
+  }
+})();
+
+function closeBanner(){
+  document.getElementById('seasonal-banner').classList.add('hidden');
+  document.body.classList.remove('has-banner');
+  sessionStorage.setItem('banner_dismissed','1');
+}
+
+/* ─────────────────────────────────────────
+   BACK TO TOP
+───────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('back-to-top');
+  if(window.scrollY > 400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}, { passive: true });
+
+/* ─────────────────────────────────────────
+   PARALLAX HERO
+───────────────────────────────────────── */
+const heroEl = document.querySelector('#hero .logo-area');
+const heroGlow = document.querySelector('.hero-glow');
+const heroDots = document.querySelector('.hero-dots');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if(heroEl)   heroEl.style.transform   = `translateY(${y * 0.18}px)`;
+  if(heroGlow) heroGlow.style.transform = `translateY(${y * 0.35}px)`;
+  if(heroDots) heroDots.style.transform = `translateY(${y * 0.1}px)`;
+}, { passive: true });
+
+/* ─────────────────────────────────────────
+   LIGHTBOX
+───────────────────────────────────────── */
+let lbIndex = 0;
+function getGalleryImages(){
+  return [...document.querySelectorAll('.g-item img')];
+}
+function openLightbox(idx){
+  const imgs = getGalleryImages();
+  lbIndex = idx;
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const lbPh  = document.getElementById('lightbox-placeholder');
+  if(imgs.length > 0 && imgs[idx]){
+    lbImg.src = imgs[idx].src;
+    lbImg.alt = imgs[idx].alt;
+    lbImg.style.display = 'block';
+    lbPh.style.display  = 'none';
+  } else {
+    lbImg.style.display = 'none';
+    lbPh.style.display  = 'block';
+    lbPh.innerHTML = '📷<br>Sem přidejte fotky<br><small style="font-size:.7rem;color:#555;font-family:Raleway,sans-serif;">Nahraďte &lt;div class="g-ph"&gt; za &lt;img src="foto.jpg"&gt;</small>';
+  }
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e){
+  if(e && e.target !== document.getElementById('lightbox') &&
+         e.target !== document.getElementById('lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function lbNav(dir){
+  const imgs = getGalleryImages();
+  const total = Math.max(imgs.length, document.querySelectorAll('.g-item').length);
+  lbIndex = (lbIndex + dir + total) % total;
+  openLightbox(lbIndex);
+}
+document.addEventListener('keydown', e => {
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox({target: document.getElementById('lightbox')});
+  if(e.key === 'ArrowLeft')  lbNav(-1);
+  if(e.key === 'ArrowRight') lbNav(1);
+});
+
+/* ─────────────────────────────────────────
+   PWA — Service Worker
+   (funguje pouze na HTTPS / localhost)
+───────────────────────────────────────── */
+if('serviceWorker' in navigator && location.protocol !== 'file:'){
+  const swCode = `
+    const CACHE = 'uhrebiku-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
+
+// Hamburger menu
+function toggleMenu(){
+  const btn = document.getElementById('hamburger');
+  const mob = document.getElementById('nav-mobile');
+  btn.classList.toggle('open');
+  mob.classList.toggle('open');
+  document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+}
+
+// Scroll progress bar
+const scrollBar = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = total > 0 ? (window.scrollY / total) * 100 : 0;
+  scrollBar.style.width = pct + '%';
+}, { passive: true });
+
+// INIT
+OVL.style.display='flex';
+drawBg(); drawCone(C.width/2);
+renderLB();
+</script>
+<!-- SHARE MODAL — fixed, vždy viditelný ve viewportu -->
+<div class="share-overlay" id="share-overlay">
+  <div class="share-card">
+
+    <button class="share-close" onclick="closeShare()" aria-label="Zavřít">✕</button>
+
+    <div class="share-inner">
+
+      <!-- hlavička -->
+      <div class="share-head">
+        <div class="share-head-icon">
+          <svg viewBox="0 0 44 84" xmlns="http://www.w3.org/2000/svg" width="18" height="34">
+            <rect x="1" y="1" width="42" height="13" rx="2.5" fill="#b8bcc8"/>
+            <rect x="18.5" y="14" width="7" height="54" rx="1" fill="#b8bcc8"/>
+            <path d="M18.5,68 L25.5,68 L22,83 Z" fill="#b8bcc8"/>
+          </svg>
+        </div>
+        <div class="share-head-text">
+          <div class="share-title">Sdílet skóre</div>
+          <div class="share-subtitle">U Hřebíků — Zmrzlina:Stánek</div>
+        </div>
+      </div>
+
+      <!-- skóre badge -->
+      <div class="share-score-badge">
+        <div>
+          <div class="share-score-num" id="share-score-num">0</div>
+        </div>
+        <div class="share-score-label">kopečků<br>zmrzliny 🍦</div>
+      </div>
+
+      <!-- kopírovat text -->
+      <div class="share-copy-label">Zkopíruj text příspěvku</div>
+      <div class="share-textarea-wrap">
+        <textarea class="share-copy-text" id="share-copy-text" readonly rows="3"></textarea>
+        <button class="share-copy-btn" id="share-copy-btn" onclick="copyShareText()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copy-btn-label">Kopírovat</span>
+        </button>
+      </div>
+
+      <!-- sociální tlačítka -->
+      <div class="share-btns">
+        <button class="share-btn share-fb" onclick="shareToFB()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Facebook
+        </button>
+        <button class="share-btn share-ig" onclick="shareToIG()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy
