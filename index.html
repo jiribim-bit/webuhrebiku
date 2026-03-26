@@ -14,7 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.bunny.net/css?family=cormorant-garamond:300,300i,400i" rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap');
     /* ── LIGHT MODE (výchozí) ────────── */
     :root {
       --bg:       #f5f5f5;
@@ -85,6 +87,7 @@
       background: var(--nav-bg);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
+      box-sizing: border-box;
     }
     .nav-logo {
       font-family:'Barlow Condensed',sans-serif;
@@ -99,6 +102,36 @@
       transition:color .25s;
     }
     .nav-links a:hover { color:var(--accent); }
+
+    /* hamburger — skrytý na desktopu, viditelný na mobilu */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      flex-shrink: 0;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 26px;
+      height: 2px;
+      background: var(--text);
+      transition: all .3s;
+      border-radius: 2px;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform:translateY(8px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity:0; }
+    .nav-hamburger.open span:nth-child(3) { transform:translateY(-8px) rotate(-45deg); }
+
+    @media(max-width:900px){
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
+    }
 
     /* ─── HERO ────────────────────────── */
     #hero {
@@ -285,7 +318,7 @@
       filter: var(--map-filter);
     }
     .map-card {
-      position:absolute; top:1.8rem; left:1.8rem;
+      position:absolute; top:1.8rem; right:1.8rem;
       background:var(--bg); border:1px solid var(--border);
       padding:1.4rem 1.8rem;
     }
@@ -501,58 +534,27 @@
     .footer-addr { font-size:.9rem; letter-spacing:.08em; margin-bottom:.5rem; }
     .footer-operator { font-size:.75rem; letter-spacing:.04em; color:var(--muted); opacity:.6; }
 
-    /* ─── RESPONSIVE ──────────────────── */
-    /* ─── HAMBURGER ───────────────────── */
-    .nav-hamburger {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      z-index: 201;
-      flex-shrink: 0;
-    }
-    .nav-hamburger span {
-      display: block;
-      width: 24px;
-      height: 2px;
-      background: var(--text);
-      transition: all .3s;
-      border-radius: 2px;
-    }
-    .nav-hamburger.open span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
-    .nav-hamburger.open span:nth-child(2) { opacity:0; }
-    .nav-hamburger.open span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
-
+    /* ─── MOBILE FULLSCREEN NAV ───────── */
     .nav-mobile {
       display:none; position:fixed; top:0; left:0; right:0; bottom:0;
-      z-index:150; background:rgba(8,8,10,.97);
+      z-index:300; background:rgba(245,245,245,.98);
       flex-direction:column; justify-content:center; align-items:center;
       gap:2.5rem;
+    }
+    @media(prefers-color-scheme:dark){
+      .nav-mobile { background:rgba(8,8,10,.98); }
     }
     .nav-mobile.open { display:flex; }
     .nav-mobile a {
       font-family:'Barlow Condensed',sans-serif; font-weight:800;
-      font-size:2rem; letter-spacing:.12em; text-transform:uppercase;
+      font-size:2.2rem; letter-spacing:.12em; text-transform:uppercase;
       color:var(--text); text-decoration:none; transition:color .2s;
     }
     .nav-mobile a:hover { color:var(--accent); }
-    .nav-mobile .nav-social {
-      display:flex; gap:1.5rem; margin-top:.5rem;
-    }
-    .nav-mobile .nav-social a {
-      font-size:1rem; color:var(--muted);
-    }
+    .nav-mobile .nav-social { display:flex; gap:1.5rem; margin-top:.5rem; }
+    .nav-mobile .nav-social a { font-size:1rem; color:var(--muted); }
 
     /* ─── RESPONSIVE ──────────────────── */
-    @media(max-width:900px){
-      .nav-links { display:none; }
-      .nav-hamburger { display:flex; }
-    }
-
     @media(max-width:768px){
       nav { padding:1rem 1.5rem; }
 
@@ -617,7 +619,7 @@
       justify-content:center; align-items:center; gap:1.8rem;
       transition:opacity .6s ease, visibility .6s ease;
     }
-    #loader.hidden { opacity:0; visibility:hidden; }
+    #loader.hidden { opacity:0; visibility:hidden; pointer-events:none; }
 
     .loader-nail {
       animation: loaderDrop .9s cubic-bezier(.22,1,.36,1) both;
@@ -673,32 +675,51 @@
     }
     .reveal-left.visible { opacity:1; transform:translateX(0); }
 
-    /* ─── SEASONAL BANNER ────────────── */
+    /* ─── ABOUT TEXT ──────────────────── */
+    .about-text {
+      max-width: 680px; margin: 0 auto;
+      font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      font-style: italic;
+      line-height: 1.85; text-align: center;
+      color: var(--text);
+      letter-spacing: .01em;
+    }
+
+    /* ─── CUSTOM CURSOR ──────────────── */
     #seasonal-banner {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 250;
-      background: var(--bg); border-bottom: 2px solid var(--border);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: var(--text);
       display: flex; align-items: center; justify-content: center;
-      gap: 1rem; padding: .7rem 3rem .7rem 1rem;
+      gap: .6rem 1.2rem; padding: .55rem 3rem .55rem 1rem;
       transition: transform .3s;
     }
-    #seasonal-banner.hidden { transform: translateY(-100%); }
+    #seasonal-banner.hidden { transform: translateY(-110%); pointer-events:none; }
     .banner-label {
       font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
-      letter-spacing: .2em; text-transform: uppercase; font-size: 1rem;
-      color: var(--accent); flex-shrink: 0;
+      letter-spacing: .22em; text-transform: uppercase; font-size: .85rem;
+      color: var(--bg); flex-shrink: 0; opacity: .6;
     }
     .banner-flavors {
-      color: var(--text); font-size: .95rem;
-      letter-spacing: .06em;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+      color: var(--bg); font-size: 1rem; letter-spacing: .1em;
+      text-transform: uppercase;
     }
     .banner-close {
-      position: absolute; right: .9rem;
-      background: none; border: none; color: var(--muted); cursor: pointer;
-      font-size: 1.1rem; line-height: 1; padding: .3rem;
+      position: absolute; right: .9rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--bg); opacity: .4;
+      cursor: pointer; font-size: 1rem; line-height: 1; padding: .3rem;
+      transition: opacity .2s;
     }
-    /* posun nav dolů když je banner viditelný */
-    body.has-banner nav { top: 44px; }
-    body.has-banner #scroll-progress { top: 44px; }
+    .banner-close:hover { opacity: .8; }
+    body.no-banner nav { top: 0 !important; }
+    body.no-banner #scroll-progress { top: 0 !important; }
+
+    @media(max-width:600px){
+      #seasonal-banner { padding: .45rem 2.5rem .45rem .8rem; gap: .2rem .6rem; flex-wrap:wrap; }
+      .banner-label { font-size: .7rem; }
+      .banner-flavors { font-size: .82rem; }
+    }
 
     /* ─── BACK TO TOP ─────────────────── */
     #back-to-top {
@@ -755,6 +776,89 @@
     }
     .combo-indicator.active { opacity: 1; }
 
+    /* ─── ROTATING HERO TEXT ─────────── */
+    .hero-rotating {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+      font-size: 1.1rem; letter-spacing: .35em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 2.4rem; height: 1.4em;
+      overflow: hidden; position: relative;
+    }
+    .hero-rotating-inner {
+      display: flex; flex-direction: column;
+      animation: rotateText 9s ease-in-out infinite;
+    }
+    .hero-rotating-inner span {
+      display: block; height: 1.4em; line-height: 1.4em; text-align: center;
+    }
+    @keyframes rotateText {
+      0%,18%   { transform: translateY(0); }
+      22%,38%  { transform: translateY(-1.4em); }
+      42%,58%  { transform: translateY(-2.8em); }
+      62%,78%  { transform: translateY(-4.2em); }
+      82%,100% { transform: translateY(0); }
+    }
+
+    /* ─── ANIMATED STATS ────────────── */
+    #stats { background: var(--bg2); }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 2rem; text-align: center;
+    }
+    .stat-box {}
+    .stat-num {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1;
+      color: var(--text); letter-spacing: .02em;
+    }
+    .stat-unit { color: var(--accent); }
+    .stat-desc {
+      font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); margin-top: .4rem;
+    }
+    @media(max-width:600px){
+      .stats-grid { grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+    }
+
+    /* ─── REVIEWS ────────────────────── */
+    #reviews { }
+    .reviews-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem;
+    }
+    .review-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem;
+    }
+    .review-stars { color: #FFD700; font-size: 1rem; letter-spacing: .1em; }
+    .review-text {
+      font-family: 'Palatino Linotype', Palatino, Georgia, serif;
+      font-style: italic; font-size: 1rem; line-height: 1.65;
+      color: var(--text); flex: 1;
+    }
+    .review-author {
+      font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    @media(max-width:768px){ .reviews-grid { grid-template-columns: 1fr; } }
+    @media(max-width:900px){ .reviews-grid { grid-template-columns: 1fr 1fr; } }
+
+    /* ─── FLOATING CTA ───────────────── */
+    #floating-cta {
+      position: fixed; bottom: 5rem; left: 1.5rem; z-index: 180;
+      opacity: 0; pointer-events: none; transform: translateY(10px);
+      transition: opacity .35s, transform .35s;
+    }
+    #floating-cta.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .cta-btn {
+      display: flex; align-items: center; gap: .6rem;
+      background: var(--text); color: var(--bg);
+      padding: .7rem 1.3rem; border: none; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: .85rem; letter-spacing: .15em; text-transform: uppercase;
+      text-decoration: none; transition: opacity .2s; white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,.18);
+    }
+    .cta-btn:hover { opacity: .85; }
+
   </style>
 </head>
 <body>
@@ -775,15 +879,23 @@
 
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="closeLightbox(event)">
-  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
-  <button id="lightbox-prev" onclick="lbNav(-1);event.stopPropagation()">‹</button>
+  <button id="lightbox-close" onclick="closeLightbox()" style="display:none">✕</button>
+  <button id="lightbox-prev" onclick="lbNav(-1);event.stopPropagation()" style="display:none">‹</button>
   <img id="lightbox-img" src="" alt="" style="display:none">
   <div id="lightbox-placeholder"></div>
-  <button id="lightbox-next" onclick="lbNav(1);event.stopPropagation()">›</button>
+  <button id="lightbox-next" onclick="lbNav(1);event.stopPropagation()" style="display:none">›</button>
+</div>
+
+<!-- FLOATING CTA -->
+<div id="floating-cta">
+  <a href="#map-section" class="cta-btn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Navštivte nás
+  </a>
 </div>
 
 <!-- LOADER -->
-<div id="loader">
+<div id="loader" style="display:none">
   <div class="loader-nail">
     <svg viewBox="0 0 44 84" xmlns="http://www.w3.org/2000/svg" width="36" height="68">
       <rect x="1" y="1" width="42" height="13" rx="2.5" fill="#b8bcc8"/>
@@ -859,7 +971,15 @@
 
     <p class="hero-sub reveal stagger-1">Tečovice</p>
     <h1 class="reveal stagger-2">U Hřebíků</h1>
-    <p class="hero-tagline reveal stagger-3">ZMRZLINA:STÁNEK</p>
+    <div class="hero-rotating reveal stagger-3">
+      <div class="hero-rotating-inner">
+        <span>Zmrzlina · Stánek</span>
+        <span>🍦 Vanilka · Malina · Dubajská</span>
+        <span>☕ Káva · Limonáda · Hranolky</span>
+        <span>😊 S úsměvem každý den</span>
+        <span>Zmrzlina · Stánek</span>
+      </div>
+    </div>
     <a href="#menu" class="btn-outline reveal stagger-4">Prohlédnout menu</a>
   </div>
   <div class="scroll-hint">
@@ -869,14 +989,70 @@
 </section>
 
 <!-- MENU -->
+<section id="about" class="sec">
+  <div class="about-text">
+    Jsme malý stánek s velkým srdcem přímo v centru Tečovic. Zastavte se k nám na kopečkovou zmrzlinu z více než 30 příchutí, naši limonádu, dobrou kávu nebo poctivé křupavé hranolky. Všechno děláme s chutí — a podáváme vždy s úsměvem.
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats" class="sec-full">
+  <div class="sec-inner">
+    <div class="stats-grid">
+      <div class="stat-box reveal">
+        <div class="stat-num"><span class="count" data-target="30">0</span><span class="stat-unit">+</span></div>
+        <div class="stat-desc">Příchutí zmrzliny</div>
+      </div>
+      <div class="stat-box reveal stagger-1">
+        <div class="stat-num"><span class="count" data-target="7">0</span></div>
+        <div class="stat-desc">Dní v týdnu otevřeno</div>
+      </div>
+      <div class="stat-box reveal stagger-2">
+        <div class="stat-num"><span class="count" data-target="2025">0</span></div>
+        <div class="stat-desc">Rok otevření</div>
+      </div>
+      <div class="stat-box reveal stagger-3">
+        <div class="stat-num"><span class="count" data-target="100">0</span><span class="stat-unit">%</span></div>
+        <div class="stat-desc">S úsměvem</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section id="reviews" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Co říkají zákazníci</span>
+    <h2 class="sec-title">Recenze</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">„Super obsluha, asi moje nové oblíbené místo."</p>
+      <div class="review-author">— Martin Hořák</div>
+    </div>
+    <div class="review-card reveal stagger-1">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">„Super krámek, super ceny!"</p>
+      <div class="review-author">— Filip Cendelín</div>
+    </div>
+    <div class="review-card reveal stagger-2">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">„Skvělý stánek, obsluha na jedničku 👍"</p>
+      <div class="review-author">— Adéla Kovářová</div>
+    </div>
+  </div>
+</section>
+
 <div id="menu" class="sec-full sec-bg">
   <div class="sec-inner">
-    <div class="sec-head reveal">
+    <div class="sec-head">
       <span class="sec-label">Co nabízíme</span>
       <h2 class="sec-title">Menu</h2>
       <div class="divider"></div>
     </div>
-    <div class="tabs reveal stagger-1">
+    <div class="tabs">
       <button class="tab on"  onclick="switchTab('zmrzlina',this)">🍦 Zmrzlina</button>
       <button class="tab"     onclick="switchTab('jidlo',this)">🍟 Jídlo</button>
       <button class="tab"     onclick="switchTab('kava',this)">☕ Káva</button>
@@ -1019,6 +1195,32 @@
     </div>
   </div>
 </div>
+
+<!-- REVIEWS -->
+<section id="reviews" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Co říkají zákazníci</span>
+    <h2 class="sec-title">Recenze</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">„Super obsluha, asi moje nové oblíbené místo."</p>
+      <div class="review-author">— Martin Hořák</div>
+    </div>
+    <div class="review-card reveal stagger-1">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">„Super krámek, super ceny!"</p>
+      <div class="review-author">— Filip Cendelín</div>
+    </div>
+    <div class="review-card reveal stagger-2">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">„Skvělý stánek, obsluha na jedničku 👍"</p>
+      <div class="review-author">— Adéla Kovářová</div>
+    </div>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
@@ -1797,25 +1999,65 @@ function playSound(type){
 }
 
 /* ─────────────────────────────────────────
-   LEADERBOARD
+   LEADERBOARD — sdílený online přes JSONBin.io
+   ✏️  Kroky pro zprovoznění:
+   1. Jděte na https://jsonbin.io a vytvořte FREE účet
+   2. Klikněte "Create Bin" a vložte: []
+   3. Zkopírujte BIN ID (řetězec v URL) do LB_BIN_ID
+   4. V Account → API Keys zkopírujte Master Key do LB_API_KEY
 ───────────────────────────────────────── */
-const LB_PAGE = 10;  // zobrazeno ve výchozím stavu
-let lbShowAll = false;
+const LB_BIN_ID  = '69c4fcc3b7ec241ddca55cec';     // ← doplňte
+const LB_API_KEY = '$2a$10$Ki/Kk9YvyvX8MlOg.WEISuGGA13bstd.eILZ/faoGcXgKiaMF.D0i';      // ← doplňte
+const LB_URL     = `https://api.jsonbin.io/v3/b/${LB_BIN_ID}`;
+const LB_PAGE    = 10;
+let lbShowAll    = false;
+let _lbCache     = null;   // lokální cache aby se nevolalo API zbytečně
 
-function getLB(){ try{ return JSON.parse(localStorage.getItem('hrebiky_lb')||'[]'); }catch{return[];} }
+// Záložní localStorage pokud API není nakonfigurované
+const LB_READY = LB_BIN_ID !== 'VASTE_BIN_ID_ZDE';
 
-function saveScore(name, score){
-  let lb = getLB();
-  lb.push({ name, score, d: new Date().toLocaleDateString('cs-CZ') });
-  lb.sort((a,b) => b.score - a.score);
-  lb = lb.slice(0, 50);  // ukládáme až 50 záznamů
-  localStorage.setItem('hrebiky_lb', JSON.stringify(lb));
-  lbShowAll = false;
-  renderLB();
+async function getLB(){
+  if(!LB_READY) return JSON.parse(localStorage.getItem('hrebiky_lb')||'[]');
+  if(_lbCache) return _lbCache;
+  try {
+    const r = await fetch(LB_URL + '/latest', { headers:{ 'X-Master-Key': LB_API_KEY } });
+    const j = await r.json();
+    _lbCache = Array.isArray(j.record) ? j.record : [];
+    return _lbCache;
+  } catch { return JSON.parse(localStorage.getItem('hrebiky_lb')||'[]'); }
 }
 
-function renderLB(){
-  const lb = getLB();
+async function saveLB(lb){
+  // vždy uložíme i lokálně jako záloha
+  localStorage.setItem('hrebiky_lb', JSON.stringify(lb));
+  if(!LB_READY) return;
+  _lbCache = lb;
+  try {
+    await fetch(LB_URL, {
+      method: 'PUT',
+      headers:{ 'Content-Type':'application/json', 'X-Master-Key': LB_API_KEY },
+      body: JSON.stringify(lb)
+    });
+  } catch { /* tiché selhání — data jsou aspoň v localStorage */ }
+}
+
+async function saveScore(name, score){
+  const lb = await getLB();
+  lb.push({ name, score, d: new Date().toLocaleDateString('cs-CZ') });
+  lb.sort((a,b) => b.score - a.score);
+  const trimmed = lb.slice(0, 50);
+  _lbCache = trimmed;
+  await saveLB(trimmed);
+  lbShowAll = false;
+  renderLBData(trimmed);
+}
+
+async function renderLB(){
+  const lb = await getLB();
+  renderLBData(lb);
+}
+
+function renderLBData(lb){
   const el = document.getElementById('lb-list');
   const moreBtn = document.getElementById('lb-more-btn');
 
@@ -1851,7 +2093,8 @@ function renderLB(){
 
 function toggleLBMore(){
   lbShowAll = !lbShowAll;
-  renderLB();
+  if(_lbCache) renderLBData(_lbCache);
+  else renderLB();
 }
 
 /* ─────────────────────────────────────────
@@ -1899,10 +2142,14 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
 }
 
 // ── LOADER ───────────────────────────────
+// Zobraz loader ihned
+const loaderEl = document.getElementById('loader');
+loaderEl.style.display = 'flex';
+
 window.addEventListener('load', () => {
   setTimeout(() => {
-    document.getElementById('loader').classList.add('hidden');
-    // spustí hero reveal po zmizení loaderu
+    loaderEl.classList.add('hidden');
+    setTimeout(() => { loaderEl.style.display = 'none'; }, 700);
     document.querySelectorAll('#hero .reveal').forEach((el, i) => {
       setTimeout(() => el.classList.add('visible'), i * 120);
     });
@@ -1934,18 +2181,26 @@ const DAILY_FLAVORS = [
 
 (function initBanner(){
   document.getElementById('banner-flavors').textContent = DAILY_FLAVORS.join(' · ');
-  const dismissed = sessionStorage.getItem('banner_dismissed');
-  if(!dismissed){
-    document.body.classList.add('has-banner');
-  } else {
-    document.getElementById('seasonal-banner').classList.add('hidden');
+  // Nastav nav top podle výšky banneru přes JS - nejspolehlivější metoda
+  function adjustNav(){
+    const banner = document.getElementById('seasonal-banner');
+    const nav    = document.querySelector('nav');
+    const sp     = document.getElementById('scroll-progress');
+    if(!banner || !nav) return;
+    const h = banner.offsetHeight;
+    nav.style.top = h + 'px';
+    if(sp) sp.style.top = h + 'px';
   }
+  adjustNav();
+  window.addEventListener('resize', adjustNav);
 })();
 
 function closeBanner(){
   document.getElementById('seasonal-banner').classList.add('hidden');
-  document.body.classList.remove('has-banner');
-  sessionStorage.setItem('banner_dismissed','1');
+  document.body.classList.add('no-banner');
+  document.querySelector('nav').style.top = '0';
+  const sp = document.getElementById('scroll-progress');
+  if(sp) sp.style.top = '0';
 }
 
 /* ─────────────────────────────────────────
@@ -1980,7 +2235,7 @@ function getGalleryImages(){
 function openLightbox(idx){
   const imgs = getGalleryImages();
   lbIndex = idx;
-  const lb = document.getElementById('lightbox');
+  const lb    = document.getElementById('lightbox');
   const lbImg = document.getElementById('lightbox-img');
   const lbPh  = document.getElementById('lightbox-placeholder');
   if(imgs.length > 0 && imgs[idx]){
@@ -1993,6 +2248,10 @@ function openLightbox(idx){
     lbPh.style.display  = 'block';
     lbPh.innerHTML = '📷<br>Sem přidejte fotky<br><small style="font-size:.7rem;color:#555;font-family:Raleway,sans-serif;">Nahraďte &lt;div class="g-ph"&gt; za &lt;img src="foto.jpg"&gt;</small>';
   }
+  // zobraz ovládací prvky
+  document.getElementById('lightbox-close').style.display = 'block';
+  document.getElementById('lightbox-prev').style.display  = 'flex';
+  document.getElementById('lightbox-next').style.display  = 'flex';
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -2000,6 +2259,11 @@ function closeLightbox(e){
   if(e && e.target !== document.getElementById('lightbox') &&
          e.target !== document.getElementById('lightbox-close')) return;
   document.getElementById('lightbox').classList.remove('open');
+  // schovej ovládací prvky
+  document.getElementById('lightbox-close').style.display = 'none';
+  document.getElementById('lightbox-prev').style.display  = 'none';
+  document.getElementById('lightbox-next').style.display  = 'none';
+  document.getElementById('lightbox-img').style.display   = 'none';
   document.body.style.overflow = '';
 }
 function lbNav(dir){
@@ -2032,6 +2296,51 @@ if('serviceWorker' in navigator && location.protocol !== 'file:'){
   const blob = new Blob([swCode], { type: 'application/javascript' });
   navigator.serviceWorker.register(URL.createObjectURL(blob));
 }
+
+// ── FLOATING CTA ─────────────────────────
+window.addEventListener('scroll', () => {
+  const cta = document.getElementById('floating-cta');
+  const btt = document.getElementById('back-to-top');
+  if(window.scrollY > 300){
+    cta.classList.add('visible');
+  } else {
+    cta.classList.remove('visible');
+  }
+  // schovej CTA když jsme u mapy
+  const map = document.getElementById('map-section');
+  if(map){
+    const r = map.getBoundingClientRect();
+    if(r.top < window.innerHeight && r.bottom > 0){
+      cta.classList.remove('visible');
+    }
+  }
+}, { passive: true });
+
+// ── ANIMATED COUNTERS ────────────────────
+function animateCounter(el){
+  const target = parseInt(el.dataset.target);
+  const duration = target > 100 ? 1800 : 900;
+  const start = performance.now();
+  function update(now){
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target);
+    if(p < 1) requestAnimationFrame(update);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.querySelectorAll('.count').forEach(animateCounter);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.stat-box').forEach(el => counterObserver.observe(el));
 
 // Hamburger menu
 function toggleMenu(){
