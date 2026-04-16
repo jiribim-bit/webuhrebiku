@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="U Hřebíků">
-  <meta name="description" content="Zmrzlina & Občerstvení v Tečovicích. Kopečková zmrzlina, limonády, jídlo.">
+  <meta name="description" content="Zmrzlina & Občerstvení v Tečovicích. Řemeslná kopečková zmrzlina z 85+ příchutí, káva, pizza a hranolky.">
   <title>U Hřebíků — Zmrzlina & Občerstvení | Tečovice</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23080808'/%3E%3Crect x='5' y='4' width='22' height='8' rx='2' fill='%23b8bcc8'/%3E%3Crect x='13' y='12' width='6' height='13' fill='%23b8bcc8'/%3E%3Cpolygon points='13,25 19,25 16,30' fill='%23b8bcc8'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23080808'/%3E%3Crect x='70' y='20' width='40' height='60' rx='8' fill='%23b8bcc8'/%3E%3Crect x='82' y='80' width='16' height='70' rx='4' fill='%23b8bcc8'/%3E%3Cpolygon points='82,150 98,150 90,170' fill='%23b8bcc8'/%3E%3C/svg%3E">
@@ -15,6 +15,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.bunny.net/css?family=cormorant-garamond:300,300i,400i" rel="stylesheet">
+
+  <!-- Firebase SDK — pro komunitní anketu. Načteno asynchronně, anketa bez configu funguje lokálně. -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap');
     /* ── LIGHT MODE (výchozí) ────────── */
@@ -269,6 +273,381 @@
       font-size:.85rem; color:var(--muted); letter-spacing:.04em;
       border-left:2px solid var(--accent); padding:.3rem 0 .3rem .8rem;
       margin-bottom:1.8rem; font-style:italic;
+    }
+
+    /* Podnadpisy uvnitř panelu (např. podskupiny v Alku) */
+    .menu-subheader {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600; font-size:.75rem;
+      letter-spacing:.32em; text-transform:uppercase;
+      color:var(--accent);
+      margin:2.4rem 0 .4rem;
+      padding-bottom:.5rem;
+      border-bottom:1px dashed var(--border);
+    }
+    .menu-subheader:first-child { margin-top:0; }
+
+    /* Vyhledávač příchutí */
+    .menu-search-wrap {
+      position:relative;
+      margin:0 0 1.8rem;
+      max-width:420px;
+    }
+    .menu-search-icon {
+      position:absolute; left:1rem; top:50%;
+      transform:translateY(-50%);
+      color:var(--muted); pointer-events:none;
+    }
+    .menu-search {
+      width:100%;
+      background:var(--bg2);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-family:'Raleway',sans-serif;
+      font-size:.9rem; letter-spacing:.02em;
+      padding:.75rem 2.5rem .75rem 2.6rem;
+      border-radius:999px;
+      transition:border-color .25s, background .25s;
+      -webkit-appearance:none; appearance:none;
+      outline:none;
+    }
+    .menu-search::placeholder { color:var(--muted); font-style:italic; }
+    .menu-search:focus { border-color:var(--accent); background:var(--bg3); }
+    .menu-search::-webkit-search-cancel-button { display:none; }
+    .menu-search-clear {
+      position:absolute; right:.5rem; top:50%;
+      transform:translateY(-50%);
+      background:none; border:none; cursor:pointer;
+      color:var(--muted); font-size:.9rem;
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s, color .2s;
+    }
+    .menu-search-clear:hover { background:var(--bg3); color:var(--text); }
+    .menu-search-empty {
+      font-size:.9rem; color:var(--muted);
+      font-style:italic; letter-spacing:.03em;
+      padding:2rem 0; text-align:center;
+    }
+    .menu-item.is-hidden { display:none; }
+
+    /* TIP badge u doporučených položek */
+    .tip-badge {
+      display:inline-block;
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic; font-weight:400;
+      font-size:.72rem; line-height:1;
+      padding:.18rem .5rem .22rem;
+      margin-left:.6rem;
+      border:1px solid var(--accent);
+      border-radius:999px;
+      color:var(--accent);
+      letter-spacing:.05em;
+      opacity:.75;
+      vertical-align:middle;
+      transition:all .25s;
+    }
+    .menu-item:hover .tip-badge { opacity:1; }
+
+    /* Řemeslná zmrzlina — showcase blok nahoře v Zmrzlině */
+    .artisan-showcase {
+      text-align:center;
+      max-width:720px;
+      margin:0 auto 2.8rem;
+      padding:1.8rem 1.5rem 2rem;
+      position:relative;
+    }
+    .artisan-ornament {
+      display:flex; align-items:center; gap:1rem;
+      max-width:380px;
+      margin:0 auto;
+    }
+    .artisan-ornament-line {
+      flex:1; height:1px;
+      background:linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+    }
+    .artisan-ornament-mark {
+      color:var(--accent);
+      font-size:.9rem;
+      opacity:.8;
+      letter-spacing:0;
+    }
+    .artisan-title {
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic;
+      font-weight:400;
+      font-size:clamp(2.2rem, 5vw, 3.2rem);
+      line-height:1.1;
+      color:var(--accent-bright);
+      margin:1.3rem 0 .6rem;
+      letter-spacing:.01em;
+    }
+    .artisan-sub {
+      display:inline-flex; flex-wrap:wrap;
+      justify-content:center; align-items:center;
+      gap:.6rem .8rem;
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600;
+      font-size:.78rem;
+      letter-spacing:.28em;
+      text-transform:uppercase;
+      color:var(--accent);
+      margin:0 0 1.1rem;
+    }
+    .artisan-sub-dot {
+      color:var(--border);
+      font-size:.6rem;
+    }
+    .artisan-desc {
+      font-family:'Raleway',sans-serif;
+      font-size:.95rem;
+      line-height:1.7;
+      color:var(--muted);
+      max-width:540px;
+      margin:0 auto 1.5rem;
+    }
+
+    @media(max-width:640px) {
+      .artisan-showcase { padding:1.2rem .5rem 1.5rem; margin-bottom:2rem; }
+      .artisan-title { font-size:2rem; }
+      .artisan-sub { font-size:.7rem; letter-spacing:.22em; gap:.4rem .6rem; }
+      .artisan-sub-dot { font-size:.5rem; }
+      .artisan-desc { font-size:.88rem; }
+    }
+
+    /* Poznámky pod Jídlem */
+    .menu-footnotes {
+      margin-top:2.4rem;
+      padding-top:1.4rem;
+      border-top:1px solid var(--border);
+    }
+    .menu-footnotes .menu-note { margin-bottom:.8rem; display:flex; }
+    .menu-footnotes .menu-note:last-child { margin-bottom:0; }
+
+    /* ─── POLL / ANKETA ───────────────── */
+    #poll { padding-top:6rem; padding-bottom:6rem; }
+    .poll-intro {
+      max-width:640px; margin:0 auto 2.4rem;
+      text-align:center; font-size:1.05rem; line-height:1.7;
+      color:var(--text);
+    }
+    .poll-intro strong { color:var(--accent-bright); font-weight:500; }
+    .poll-intro-note {
+      display:inline-block; margin-top:.5rem;
+      font-size:.8rem; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--muted);
+    }
+    .poll-mode-badge {
+      display:inline-block;
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600; font-size:.68rem;
+      letter-spacing:.24em; text-transform:uppercase;
+      padding:.3rem .8rem;
+      border-radius:999px;
+      margin-bottom:1rem;
+    }
+    .poll-mode-badge.is-community {
+      background:rgba(201,169,97,.12);
+      color:#c9a961;
+      border:1px solid rgba(201,169,97,.35);
+    }
+    .poll-mode-badge.is-local {
+      background:var(--bg2);
+      color:var(--muted);
+      border:1px solid var(--border);
+    }
+    .poll-mode-badge:empty { display:none; }
+    .poll-menu-link {
+      color:var(--accent-bright);
+      text-decoration:underline;
+      text-decoration-color:var(--border);
+      text-underline-offset:3px;
+      transition:text-decoration-color .25s, color .25s;
+    }
+    .poll-menu-link:hover {
+      text-decoration-color:var(--accent-bright);
+    }
+
+    .poll-meta {
+      display:flex; justify-content:center; align-items:center;
+      flex-wrap:wrap; gap:1rem;
+      margin-bottom:3.5rem; padding:1.2rem 1.5rem;
+      border:1px solid var(--border); border-radius:999px;
+      max-width:fit-content; margin-left:auto; margin-right:auto;
+      background:var(--bg2);
+    }
+    .poll-meta-item { display:inline-flex; align-items:baseline; gap:.5rem; }
+    .poll-meta-num {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1.4rem; font-weight:800;
+      color:var(--accent-bright);
+    }
+    .poll-meta-lbl {
+      font-size:.7rem; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--muted);
+    }
+    .poll-meta-sep { color:var(--border); }
+    .poll-meta-item[hidden],
+    .poll-meta-sep[hidden] { display:none !important; }
+
+    .poll-section-title {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1.1rem; font-weight:600;
+      letter-spacing:.28em; text-transform:uppercase;
+      text-align:center;
+      color:var(--accent-bright);
+      margin:0 0 1.8rem;
+    }
+
+    /* Leaderboard */
+    .poll-top10 { max-width:720px; margin:0 auto 2rem; }
+    .poll-leaderboard {
+      list-style:none; padding:0; margin:0;
+      display:flex; flex-direction:column; gap:.6rem;
+    }
+    .poll-lb-row {
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center; gap:1rem;
+      padding:.9rem 1.2rem;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:8px;
+      transition:transform .25s, border-color .25s;
+    }
+    .poll-lb-row:hover { transform:translateX(3px); border-color:var(--accent); }
+    .poll-lb-rank {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1.3rem; font-weight:800;
+      color:var(--muted);
+      min-width:2.2rem;
+    }
+    .poll-lb-row.rank-1 .poll-lb-rank,
+    .poll-lb-row.rank-2 .poll-lb-rank,
+    .poll-lb-row.rank-3 .poll-lb-rank {
+      font-size:1.5rem;
+    }
+    .poll-lb-row.rank-1 { border-color:#c9a961; }
+    .poll-lb-row.rank-2 { border-color:#9fa4ad; }
+    .poll-lb-row.rank-3 { border-color:#a87555; }
+    .poll-lb-name {
+      font-size:1rem; letter-spacing:.02em;
+      color:var(--text); font-weight:500;
+    }
+    .poll-lb-votes {
+      display:inline-flex; align-items:center; gap:.35rem;
+      color:var(--accent);
+    }
+    .poll-lb-votes-num {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:800; font-size:1.2rem;
+      color:var(--accent-bright);
+    }
+    .poll-lb-votes-heart { font-size:.9rem; opacity:.85; }
+
+    .poll-lb-row.my-vote {
+      background:linear-gradient(90deg, rgba(229,107,138,.07), var(--bg2));
+    }
+    .poll-lb-mymark {
+      display:inline-block;
+      margin-left:.6rem;
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic;
+      font-size:.78rem;
+      color:#e56b8a;
+      padding:.05rem .45rem;
+      border:1px solid rgba(229,107,138,.35);
+      border-radius:999px;
+      vertical-align:middle;
+    }
+
+    .poll-empty {
+      text-align:center; padding:2.5rem 1rem;
+      color:var(--muted); font-size:1rem;
+      background:var(--bg2); border:1px dashed var(--border);
+      border-radius:10px;
+    }
+    .poll-empty-sub {
+      display:inline-block; margin-top:.5rem;
+      font-size:.85rem; font-style:italic; opacity:.85;
+    }
+
+    /* Hlasovací tlačítko — používá se i uvnitř menu-item */
+    .poll-vote-btn {
+      display:inline-flex; align-items:center; gap:.35rem;
+      background:none; border:1px solid var(--border);
+      color:var(--muted); cursor:pointer;
+      padding:.4rem .7rem; border-radius:999px;
+      font-family:'Raleway',sans-serif; font-size:.72rem;
+      letter-spacing:.08em; font-weight:500;
+      transition:all .2s;
+      white-space:nowrap;
+    }
+    .poll-vote-btn:hover:not(:disabled) {
+      border-color:var(--accent); color:var(--accent);
+      transform:scale(1.05);
+    }
+    .poll-vote-btn:active:not(:disabled) { transform:scale(.95); }
+    .poll-vote-btn.has-votes {
+      border-color:var(--accent); color:var(--accent);
+      background:rgba(184,188,200,.08);
+    }
+    .poll-vote-btn:disabled {
+      cursor:not-allowed; opacity:.55;
+      color:var(--muted); border-color:var(--border);
+    }
+    .poll-vote-btn .heart { font-size:.95rem; transition:color .25s; }
+    .poll-vote-btn.has-votes .heart { color:#e56b8a; opacity:1; }
+    .poll-vote-btn.is-maxed .heart { color:#e56b8a; }
+    .poll-vote-count {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700; font-size:.78rem;
+      letter-spacing:.05em;
+    }
+
+    /* Heart animation on vote */
+    @keyframes heart-pop {
+      0%   { transform:scale(1); }
+      40%  { transform:scale(1.45); }
+      100% { transform:scale(1); }
+    }
+    .poll-vote-btn.just-voted .heart { animation:heart-pop .5s ease-out; }
+
+    /* Hlasovací tlačítka přímo v menu (záložka Zmrzlina) */
+    #panel-zmrzlina .menu-grid {
+      grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+      gap:.2rem .4rem;
+    }
+    .menu-item.is-voteable {
+      gap:.6rem;
+    }
+    .menu-item.is-voteable .item-name {
+      flex:1; min-width:0;
+    }
+    .menu-item.is-voteable .poll-vote-btn {
+      flex-shrink:0;
+      padding:.28rem .55rem;
+      font-size:.66rem;
+      margin-left:auto;
+    }
+    .menu-item.is-voteable:hover { padding-left:0; }
+    .menu-item.is-voteable:hover .item-name { color:var(--accent-bright); }
+    .menu-item.has-votes .item-name {
+      color:var(--accent-bright); font-weight:500;
+    }
+
+    .poll-disclaimer {
+      margin-top:2.4rem; text-align:center;
+      font-size:.78rem; color:var(--muted);
+      letter-spacing:.03em; font-style:italic;
+    }
+
+    @media(max-width:640px) {
+      .poll-meta { padding:1rem; gap:.6rem; border-radius:12px; }
+      .poll-meta-sep { display:none; }
+      .poll-meta-item { padding:.2rem .6rem; }
+      .poll-lb-row { padding:.75rem .9rem; gap:.7rem; }
+      .poll-lb-name { font-size:.9rem; }
+      #panel-zmrzlina .menu-grid { grid-template-columns:1fr; }
     }
 
     /* ─── GALLERY ─────────────────────── */
@@ -914,6 +1293,7 @@
   <a class="nav-logo" href="#hero">U Hřebíků</a>
   <ul class="nav-links">
     <li><a href="#menu">Menu</a></li>
+    <li><a href="#poll">Anketa</a></li>
     <li><a href="#gallery">Galerie</a></li>
     <li><a href="#hours">Provozní doba</a></li>
     <li><a href="#map-section">Kde jsme</a></li>
@@ -927,6 +1307,7 @@
 <!-- MOBILE NAV -->
 <div class="nav-mobile" id="nav-mobile">
   <a href="#menu"        onclick="toggleMenu()">Menu</a>
+  <a href="#poll"        onclick="toggleMenu()">Anketa</a>
   <a href="#gallery"     onclick="toggleMenu()">Galerie</a>
   <a href="#hours"       onclick="toggleMenu()">Provozní doba</a>
   <a href="#map-section" onclick="toggleMenu()">Kde jsme</a>
@@ -975,7 +1356,7 @@
       <div class="hero-rotating-inner">
         <span>Zmrzlina · Stánek</span>
         <span>🍦 Vanilka · Malina · Dubajská</span>
-        <span>☕ Káva · Limonáda · Hranolky</span>
+        <span>☕ Káva · Pizza · Hranolky</span>
         <span>😊 S úsměvem každý den</span>
         <span>Zmrzlina · Stánek</span>
       </div>
@@ -991,7 +1372,7 @@
 <!-- MENU -->
 <section id="about" class="sec">
   <div class="about-text">
-    Jsme malý stánek s velkým srdcem přímo v centru Tečovic. Zastavte se k nám na kopečkovou zmrzlinu z více než 30 příchutí, naši limonádu, dobrou kávu nebo poctivé křupavé hranolky. Všechno děláme s chutí — a podáváme vždy s úsměvem.
+    Jsme malý stánek s velkým srdcem přímo v centru Tečovic. Zastavte se k nám na naši řemeslnou kopečkovou zmrzlinu z více než 85 příchutí, dobrou kávu, poctivé křupavé hranolky nebo pravou pizzu. Všechno děláme s chutí — a podáváme vždy s úsměvem.
   </div>
 </section>
 
@@ -1000,7 +1381,7 @@
   <div class="sec-inner">
     <div class="stats-grid">
       <div class="stat-box reveal">
-        <div class="stat-num"><span class="count" data-target="30">0</span><span class="stat-unit">+</span></div>
+        <div class="stat-num"><span class="count" data-target="85">0</span><span class="stat-unit">+</span></div>
         <div class="stat-desc">Příchutí zmrzliny</div>
       </div>
       <div class="stat-box reveal stagger-1">
@@ -1032,19 +1413,108 @@
       <button class="tab"     onclick="switchTab('kava',this)">☕ Káva</button>
       <button class="tab"     onclick="switchTab('nealko',this)">🥤 Nealko</button>
       <button class="tab"     onclick="switchTab('alko',this)">🍺 Alko</button>
-      <button class="tab"     onclick="switchTab('sladkosti',this)">🍬 Sladkosti</button>
+      <button class="tab"     onclick="switchTab('ostatni',this)">🥨 Ostatní</button>
     </div>
     <div id="panel-zmrzlina" class="panel on">
-      <p class="menu-note">Toto jsou všechny naše příchutě — v nabídce vždy rotujeme aktuální výběr.</p>
+      <div class="artisan-showcase">
+        <div class="artisan-ornament">
+          <span class="artisan-ornament-line"></span>
+          <span class="artisan-ornament-mark">✦</span>
+          <span class="artisan-ornament-line"></span>
+        </div>
+        <h3 class="artisan-title">Řemeslná zmrzlina</h3>
+        <p class="artisan-sub">
+          <span>Vlastní výroba</span>
+          <span class="artisan-sub-dot">•</span>
+          <span>Čerstvé suroviny</span>
+          <span class="artisan-sub-dot">•</span>
+          <span>Bez zbytečných přísad</span>
+        </p>
+        <p class="artisan-desc">
+          Každý kopeček děláme poctivě u&nbsp;nás ve stánku. Používáme pravé ovoce, ořechy, čokoládu a&nbsp;mléčné suroviny — žádné umělé příchutě ani barviva.
+        </p>
+        <div class="artisan-ornament">
+          <span class="artisan-ornament-line"></span>
+          <span class="artisan-ornament-mark">✦</span>
+          <span class="artisan-ornament-line"></span>
+        </div>
+      </div>
+      <p class="menu-note">V nabídce vždy rotujeme aktuální výběr. Klikněte na <span style="color:#e56b8a">♥</span> u svých 3 favoritů a podpořte je v <a href="#poll" class="poll-menu-link">anketě TOP</a>.</p>
+      <div class="menu-search-wrap">
+        <svg class="menu-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" class="menu-search" id="zmrzlina-search" placeholder="Hledat příchuť…" aria-label="Hledat příchuť">
+        <button class="menu-search-clear" id="zmrzlina-search-clear" aria-label="Vymazat" hidden>✕</button>
+      </div>
+      <p class="menu-search-empty" id="zmrzlina-empty" hidden>Žádná příchuť neodpovídá hledání.</p>
       <div class="menu-grid"></div>
     </div>
-    <div id="panel-jidlo"     class="panel"><div class="menu-grid"></div></div>
-    <div id="panel-kava"      class="panel"><div class="menu-grid"></div></div>
-    <div id="panel-nealko"    class="panel"><div class="menu-grid"></div></div>
-    <div id="panel-alko"      class="panel"><div class="menu-grid"></div></div>
-    <div id="panel-sladkosti" class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-jidlo" class="panel">
+      <div class="menu-grid"></div>
+      <div class="menu-footnotes">
+        <p class="menu-note">Omáčky na výběr: česneková, chilli, kebab</p>
+        <p class="menu-note">Kynutá kulička navíc · Smažený sýr navíc</p>
+      </div>
+    </div>
+    <div id="panel-kava"    class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-nealko"  class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-alko"    class="panel"><div class="menu-grid"></div></div>
+    <div id="panel-ostatni" class="panel"><div class="menu-grid"></div></div>
   </div>
 </div>
+
+<!-- POLL / ANKETA -->
+<section id="poll" class="sec-full">
+  <div class="sec-inner">
+    <div class="sec-head reveal">
+      <span class="sec-label">Vaše oblíbené</span>
+      <h2 class="sec-title">Anketa</h2>
+      <div class="divider"></div>
+    </div>
+
+    <p class="poll-intro reveal">
+      <span class="poll-mode-badge" id="poll-mode-badge"></span>
+      <br>
+      Která zmrzlina je v našem stánku <strong>nejoblíbenější</strong>? Vyberte <strong>svoje TOP 3</strong> — klikněte na srdíčko <span style="color:#e56b8a">♥</span> u oblíbené příchuti přímo v záložce <a href="#menu" class="poll-menu-link">Zmrzlina</a>.
+      <br><span class="poll-intro-note">Váš hlas pomůže ostatním vybrat — a vy vidíte, co chutná jim.</span>
+    </p>
+
+    <div class="poll-meta reveal">
+      <span class="poll-meta-item">
+        <span class="poll-meta-num"><span id="poll-used-votes">0</span>&nbsp;/&nbsp;<span id="poll-max-votes">3</span></span>
+        <span class="poll-meta-lbl">moje hlasy</span>
+      </span>
+      <span class="poll-meta-sep" id="poll-total-sep" hidden>·</span>
+      <span class="poll-meta-item" id="poll-total-wrap" hidden>
+        <span class="poll-meta-num" id="poll-total-votes">0</span>
+        <span class="poll-meta-lbl">celkem hlasů</span>
+      </span>
+      <span class="poll-meta-sep" id="poll-flavors-sep" hidden>·</span>
+      <span class="poll-meta-item" id="poll-flavors-wrap" hidden>
+        <span class="poll-meta-num" id="poll-total-flavors">0</span>
+        <span class="poll-meta-lbl">příchutí</span>
+      </span>
+      <span class="poll-meta-sep" id="poll-reset-sep" hidden>·</span>
+      <span class="poll-meta-item" id="poll-reset-wrap" hidden>
+        <span class="poll-meta-num" id="poll-reset-days">7</span>
+        <span class="poll-meta-lbl">dní do resetu</span>
+      </span>
+    </div>
+
+    <div class="poll-top10 reveal">
+      <h3 class="poll-section-title" id="poll-section-title">🏆 TOP 10 nejoblíbenějších</h3>
+      <ol class="poll-leaderboard" id="poll-leaderboard"></ol>
+      <p class="poll-empty" id="poll-empty">
+        Zatím nikdo nehlasoval.<br>
+        <span class="poll-empty-sub">Buďte první! Přejděte na <a href="#menu" class="poll-menu-link">Menu → Zmrzlina</a> a klikněte na srdíčko u příchutí, které vám nejvíc chutnají.</span>
+      </p>
+    </div>
+
+    <p class="poll-disclaimer">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:.3rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Klikněte na srdíčko podruhé, pokud chcete svůj výběr změnit. Váš limit 3 hlasů se obnovuje po 7 dnech.
+    </p>
+  </div>
+</section>
 
 <!-- GALLERY -->
 <section id="gallery" class="sec">
@@ -1230,53 +1700,142 @@
 ───────────────────────────────────────── */
 const MENU = {
   zmrzlina: [
-    'Vanilka','Čokoláda','Slaný karamel','Malina','Dubajská','Pistáciová',
-    'Mango','Dračí ovoce','Šmoula','Citrón','Pomeranč','Borůvka','Unicorn',
-    'Cookies','Stracciatella','Šreck','Jahoda RAW s liči',
-    'Jogurt Prolévaný Ovocem','Lesní plody','Cheesecake','Meruňka',
-    'Rakytník','Vlašský ořech','Maková','Medový Perníček','Perník s povidly',
-    'Krupicová kaše','Dýně s kardamonem','Banán s čokoládou',
-    'Pistácie pesto','Vanilka Nutella','Tříšť','Praskací lízátko',
-    'Černý kornoutek','Termobox'
+    'Aloe Vera','Ananas Sorbet','Arašídový karamel','Banán s čokoládou','Bezinka',
+    'Borůvka','Borůvka RAW','Borůvka RAW s Levandulí','Broskev Sorbet','Buble Gum',
+    'Citrón','Citron cheesecake','Cookies','Černý rybíz RAW','Čerstvý Jogurt bez cukru',
+    'Čokoláda','Čokoláda 72%','Čokoládový sorbet','Čtyři druhy ořechů','Dolce Latte',
+    'Dračí ovoce','Dračí ovoce RAW Sorbet','Dubajská','Dýně s kardamonem','Fíkový sorbet',
+    'Frgál','Granátové jablko','Cheesecake','Cheesecake s jahodami','Jablko',
+    'Jahoda RAW','Jahoda RAW s liči','Jahoda RAW Sorbet','Jahodový milkshake','Jogurt Prolévaný Ovocem',
+    'Karamelová tyčinka','Káva','Kokos & Mandle','Krupicová kaše','Lesní plody',
+    'Levandule','Lískový ořech','Maková','Malina','Malina RAW',
+    'Malina RAW Sorbet','Malina s čokoládou','Malinový kefír','Mango','Mango Sorbet',
+    'Maracuja RAW Sorbet','Matcha a Karamel','Medový Perníček','Meloun','Meruňka',
+    'Moravský meruňkový koláč','Nugát','Nugátový Croissant','Pekanový Karamel','Perník s povidly',
+    'Pinguino','Pistácie 100%','Pistácie pesto','Pistáciová','Pomeranč',
+    'Popcorn v karamelu','Praskací lízátko','Přesnídávka','Punč s rozinkami','Rakytník',
+    'Sachr','Slaný karamel','Slaný karamel s himalájskou solí','Stracciatella','Šmoula',
+    'Špička','Šreck','Tiramisu','Tvarohový Méďa',
+    'Unicorn','Vanilka','Vanilka Madagaskar','Vanilka Nutella','Vanilka Retro',
+    'Větrník','Višeň RAW Sorbet','Višňové brownie','Vlašský ořech'
   ],
   jidlo: [
-    'Hranolky Malé 150g','Hranolky Velké 200g',
-    'Hranolky Batátové Malé 150g','Hranolky Batátové Velké 200g',
-    'Vafle na špejli','Párek v rohlíku','Párek v bagetce',
-    'Palačinka s náplní','Cyrilovy Brambůrky 100g','Tyčky Bohemia Hradecké'
+    'Pizza 33cm — Klasik, Čtyřsýrová, Mexická, Žampionová',
+    'Batátové hranolky 180g, kečup/tatarka',
+    'Hranolky 180g, kečup/tatarka',
+    { name: 'Kynuté kuličky sladké (cukr, skořice, topping, posypka, šlehačka) 8ks', tip: true },
+    'Kynuté kuličky slané (omáčka, sýr, cibulka) 8ks',
+    'Chilli Nuggets — smažené sýrové kousky, omáčka 5ks',
+    { name: 'Swiss Wedges — smažené sýrové klínky, omáčka 5ks', tip: true },
+    'Mozzarella Sticks — smažené sýrové tyčky, omáčka 4ks'
   ],
-  kava: ['Espresso / Lungo','Cappuccino','Ledová káva','Ledové latte','Affogato','Grog'],
+  kava: [
+    'Espresso / Lungo',
+    'Cappuccino',
+    'Ledová káva / Ledové latte',
+    { name: 'Affogato (vanilková zmrzlina, espresso)', tip: true },
+    'Extra shot'
+  ],
   nealko: [
-    'Coca-Cola','Coca-Cola Zero','Red Bull','Red Bull Light',
-    'Fuze Tea Broskev a Ibišek','Capri-Sun',
-    'Birell Active Mango a Citrón','Birell Active Pomelo a Grep','Birell Světlý',
-    'Limonáda Ananas+Kiwi','Limonáda Grep+Bezinka',
-    'Limonáda Lesní Směs','Limonáda Mango+Meruňka',
-    'Targa Florio Citrón','Targa Florio Pomeranč',
-    'Targa Florio Tonic','Targa Florio Tonic Rosa',
-    'Jupík Aqua Lesní ovoce','Jupík Aqua Malina',
-    'Kubík Water Jablko','Kubík Water Jahoda',
-    'Royal Crown Cola','ZONka Pomeranč','Voda balená 0,5l'
+    'Coca-Cola / Zero 0,5l PET',
+    'Voda neperlivá 0,5l PET',
+    { name: 'First Electrolyte (elektrolyty bez cukru) 0,5l PET', tip: true },
+    'Přírodně ochucená voda — Pomeranč, Rybíz, Multi 0,5l PET',
+    'Ledový čaj — Broskev, Sicilský Citron 0,5l PET',
+    'Ovocná šťáva — Pomeranč, Jablko, Jahoda, Rybíz 0,2l',
+    'Ovocný nektar pro děti + brčko — Jahoda, Borůvka 0,2l'
   ],
-  alko: [
-    'Aperol Spritz','Gin Tonic','Cuba Libre',
-    'Prosecco 0,1l','Prosecco 0,2l',
-    'Víno 0,1l','Víno 0,75l','Víno Štěpánek',
-    'Pilsner Urquell 0,33l','Plzeň Pilsner plech 0,5l',
-    'Frisco Jablečný Cider','Frisco Jahodové Daiquiri',
-    'Rum Republica','Vodka Finlandia','Gin Beefeater',
-    'Moravská Švestka','Burčák 0,1l'
-  ],
-  sladkosti: ['Myš Trolli','Pendrek']
+  alko: {
+    'Míchané nápoje': [
+      'Gin + Tonic 0,25l',
+      'Aperol Spritz 0,25l'
+    ],
+    'Víno': [
+      'Prosecco 0,1l',
+      'Víno Štěpánek Mutěnice 0,1l',
+      'Víno Štěpánek Mutěnice láhev 0,75l'
+    ],
+    'Lihoviny': [
+      'Rum Božkov Republica 0,04l',
+      'Gin Beefeater 0,04l'
+    ],
+    'Pivo': [
+      'Pilsner Urquell 0,33l sklo',
+      'Birell nealko 0,5l plech',
+      { name: '11° Alojz, 12° Vincet, 11° Švihák APA', tip: true },
+      'Pivovar Luhačovice 1,0l PET'
+    ]
+  },
+  ostatni: [
+    'Brambůrky Bohemia solené 60g',
+    'Myš Trolli 1ks'
+  ]
 };
 
-Object.entries(MENU).forEach(([cat, items]) => {
-  const g = document.querySelector(`#panel-${cat} .menu-grid`);
-  items.forEach(name => {
-    const d = document.createElement('div');
-    d.className = 'menu-item';
-    d.innerHTML = `<span class="dot"></span><span class="item-name">${name}</span>`;
-    g.appendChild(d);
+/* ═══════════════════════════════════════════════════════════════════
+   ANKETA — KONSTANTY (viz inicializaci ankety níže)
+═══════════════════════════════════════════════════════════════════ */
+const POLL_KEY            = 'uhrebiku_poll_v2';      // v2: pravidla se změnila
+const POLL_TTL_MS         = 7 * 24 * 60 * 60 * 1000; // 7 dní
+const POLL_MAX_VOTES      = 3;                       // max 3 různé příchutě
+const POLL_EXCLUDE        = new Set();               // žádné vyloučené položky
+
+function buildMenuItem(item, opts) {
+  opts = opts || {};
+  const name  = typeof item === 'string' ? item : item.name;
+  const isTip = typeof item === 'object' && item.tip;
+  const d = document.createElement('div');
+  d.className = 'menu-item';
+
+  let inner =
+    `<span class="dot"></span>` +
+    `<span class="item-name">${name}` +
+      (isTip ? `<span class="tip-badge">tip</span>` : ``) +
+    `</span>`;
+
+  if (opts.voteable) {
+    d.classList.add('is-voteable');
+    d.dataset.flavor = name;
+    inner +=
+      `<button class="poll-vote-btn" data-flavor="${name.replace(/"/g,'&quot;')}" aria-label="Hlasovat pro ${name} — anketa TOP 10 příchutí" aria-pressed="false">` +
+        `<span class="heart" aria-hidden="true">♥</span>` +
+      `</button>`;
+  }
+
+  d.innerHTML = inner;
+  return d;
+}
+
+Object.entries(MENU).forEach(([cat, data]) => {
+  const panel = document.getElementById(`panel-${cat}`);
+  if (!panel) return;
+
+  // Ploché pole = jednoduchý seznam položek
+  if (Array.isArray(data)) {
+    const g = panel.querySelector('.menu-grid');
+    data.forEach(item => {
+      const name = typeof item === 'string' ? item : item.name;
+      const voteable = cat === 'zmrzlina' && !POLL_EXCLUDE.has(name);
+      g.appendChild(buildMenuItem(item, { voteable }));
+    });
+    return;
+  }
+
+  // Objekt = podskupiny s nadpisy (použito pro Alko)
+  const existingGrid = panel.querySelector('.menu-grid');
+  const anchor       = panel.querySelector('.menu-note') || existingGrid;
+  if (existingGrid) existingGrid.remove();
+
+  Object.entries(data).forEach(([subName, subItems]) => {
+    const h = document.createElement('h3');
+    h.className  = 'menu-subheader';
+    h.textContent = subName;
+    panel.appendChild(h);
+
+    const g = document.createElement('div');
+    g.className = 'menu-grid';
+    subItems.forEach(item => g.appendChild(buildMenuItem(item)));
+    panel.appendChild(g);
   });
 });
 
@@ -1286,6 +1845,356 @@ function switchTab(cat, btn) {
   btn.classList.add('on');
   document.getElementById(`panel-${cat}`).classList.add('on');
 }
+
+/* ─────────────────────────────────────────
+   VYHLEDÁVÁNÍ PŘÍCHUTÍ ZMRZLINY
+   Filtruje seznam příchutí bez ohledu na diakritiku a velikost písmen
+───────────────────────────────────────── */
+function createFlavorSearch(inputId, clearId, emptyId, containerSel, itemSel, nameSel) {
+  const input = document.getElementById(inputId);
+  const clear = document.getElementById(clearId);
+  const empty = document.getElementById(emptyId);
+  const root  = document.querySelector(containerSel);
+  if(!input || !root) return;
+
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  function filter(){
+    const q = norm(input.value.trim());
+    const items = root.querySelectorAll(itemSel);
+    let visible = 0;
+    items.forEach(it => {
+      const name = norm((it.querySelector(nameSel) || it).textContent);
+      const hit  = !q || name.includes(q);
+      it.classList.toggle('is-hidden', !hit);
+      if(hit) visible++;
+    });
+    if(empty) empty.hidden = visible !== 0;
+    if(clear) clear.hidden = input.value.length === 0;
+  }
+
+  input.addEventListener('input', filter);
+  if(clear) clear.addEventListener('click', () => {
+    input.value = ''; filter(); input.focus();
+  });
+}
+
+// Vyhledávač v záložce Zmrzlina
+createFlavorSearch(
+  'zmrzlina-search', 'zmrzlina-search-clear', 'zmrzlina-empty',
+  '#panel-zmrzlina .menu-grid', '.menu-item', '.item-name'
+);
+
+/* ═════════════════════════════════════════════════════════════════
+   ANKETA — KOMUNITNÍ TOP 10 PŘÍCHUTÍ
+   ─────────────────────────────────────────────────────────────────
+   Hlasovací tlačítka jsou u každé příchuti v záložce Zmrzlina.
+   Výsledky (TOP 10) se zobrazují v sekci Anketa a sčítají se
+   napříč všemi návštěvníky přes Firebase Firestore.
+
+   Pravidla:
+     • každý uživatel může hlasovat pro 3 různé příchutě (max 1× pro každou)
+     • druhé kliknutí hlas zase odebere (toggle)
+     • uživatelské hlasy se sledují lokálně v prohlížeči (localStorage)
+       — slouží pouze jako zámek, aby jeden uživatel nemohl hlasovat
+       stokrát pro stejnou zmrzlinu
+     • globální hlasy se ukládají v cloudu a jsou viditelné pro všechny
+     • 7denní reset uživatelova "slotu" — po týdnu může hlasovat znovu
+     • globální čísla reset NEMAJÍ automatický (lze vynulovat
+       ručně ve Firebase konzoli)
+
+   ┌──────────────────────────────────────────────────────────────┐
+   │  KONFIGURACE FIREBASE — JAK ZAPNOUT SPOLEČNOU ANKETU         │
+   ├──────────────────────────────────────────────────────────────┤
+   │  1. Jdi na https://console.firebase.google.com               │
+   │  2. Založ projekt (např. "uhrebiku-poll")                    │
+   │  3. V levém menu zvol "Build → Firestore Database"           │
+   │     a klikni "Create database" → "Start in test mode"        │
+   │  4. V nastavení projektu (ozubené kolo) → "Your apps"        │
+   │     → přidej webovou aplikaci (ikona </>)                    │
+   │  5. Zkopíruj firebaseConfig a vlož ho níže namísto prázdných │
+   │     hodnot.                                                  │
+   │                                                              │
+   │  Bez configu anketa funguje jen lokálně (v prohlížeči        │
+   │  uživatele), s configem se hlasy sčítají napříč všemi.      │
+   └──────────────────────────────────────────────────────────────┘
+═════════════════════════════════════════════════════════════════ */
+
+// ⬇⬇⬇  VLOŽ SEM FIREBASE CONFIG Z PROJEKTU  ⬇⬇⬇
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCktDizJ7_D25DJS6OpJbEu11b_SlcOyFw",
+  authDomain: "u-hrebiku.firebaseapp.com",
+  projectId: "u-hrebiku",
+  storageBucket: "u-hrebiku.firebasestorage.app",
+  messagingSenderId: "784639793156",
+  appId: "1:784639793156:web:fd4430058600eb7e7f7d51"
+};
+// ⬆⬆⬆  VLOŽ SEM FIREBASE CONFIG Z PROJEKTU  ⬆⬆⬆
+
+/* Funkce vrátí bezpečný identifikátor pro Firestore document ID
+   — z "Čokoláda 72%" udělá "cokolada_72" apod. */
+function flavorId(name){
+  return name.toLowerCase()
+             .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+             .replace(/[^a-z0-9]+/g,'_')
+             .replace(/^_+|_+$/g,'');
+}
+
+/* Stav backendu — nastaví se v initPoll() */
+let pollBackend   = 'local';     // 'local' | 'firebase'
+let firestoreDoc  = null;        // reference na Firestore dokument
+let globalVotes   = {};          // { "Vanilka": 42, ... } — hlasy všech uživatelů
+
+/* ───── localStorage (per-uživatelský lock) ───── */
+function loadMyVotes(){
+  try {
+    const raw = localStorage.getItem(POLL_KEY);
+    if(!raw) return { voted:{}, startedAt:null };
+    const data = JSON.parse(raw);
+    // Expirace 7 dní od prvního hlasu — pak uživatel může hlasovat znovu
+    if(data.startedAt && Date.now() - data.startedAt > POLL_TTL_MS){
+      localStorage.removeItem(POLL_KEY);
+      return { voted:{}, startedAt:null };
+    }
+    return data;
+  } catch(e){ return { voted:{}, startedAt:null }; }
+}
+function saveMyVotes(data){
+  try { localStorage.setItem(POLL_KEY, JSON.stringify(data)); } catch(e){}
+}
+
+/* ───── Firebase (globální čítače) ───── */
+function initFirebase(){
+  if(!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId){
+    console.info('[Anketa] Firebase config není vyplněný — běžím v lokálním režimu.');
+    return false;
+  }
+  if(!window.firebase){
+    console.warn('[Anketa] Firebase SDK se nenačetl.');
+    return false;
+  }
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    firestoreDoc = firebase.firestore().doc('poll/results');
+    pollBackend  = 'firebase';
+    console.info('[Anketa] Firebase připojen — anketa běží v komunitním režimu.');
+    return true;
+  } catch(e){
+    console.error('[Anketa] Firebase init selhal:', e);
+    return false;
+  }
+}
+
+function subscribeGlobalVotes(onChange){
+  if(pollBackend !== 'firebase') return () => {};
+  return firestoreDoc.onSnapshot(snap => {
+    const data = snap.exists ? (snap.data() || {}) : {};
+    const flavors = data.flavors || {};
+    const names   = data.names   || {};
+    globalVotes = {};
+    Object.keys(flavors).forEach(id => {
+      const name  = names[id] || id;
+      const count = flavors[id] || 0;
+      if(count > 0) globalVotes[name] = count;
+    });
+    onChange();
+  }, err => {
+    console.error('[Anketa] Firestore error:', err);
+  });
+}
+
+async function incrementGlobal(flavor, delta){
+  if(pollBackend !== 'firebase') return;
+  const id = flavorId(flavor);
+  try {
+    await firestoreDoc.set({
+      flavors: { [id]: firebase.firestore.FieldValue.increment(delta) },
+      names:   { [id]: flavor }  // ukládáme i původní název s diakritikou
+    }, { merge: true });
+  } catch(e){
+    console.error('[Anketa] Zápis hlasu selhal:', e);
+  }
+}
+
+(function initPoll(){
+  const leaderboard = document.getElementById('poll-leaderboard');
+  const emptyEl     = document.getElementById('poll-empty');
+  const usedEl      = document.getElementById('poll-used-votes');
+  const maxEl       = document.getElementById('poll-max-votes');
+  const totalEl     = document.getElementById('poll-total-votes');
+  const flavorsEl   = document.getElementById('poll-total-flavors');
+  const totalSep    = document.getElementById('poll-total-sep');
+  const flavorsSep  = document.getElementById('poll-flavors-sep');
+  const totalWrap   = document.getElementById('poll-total-wrap');
+  const flavorsWrap = document.getElementById('poll-flavors-wrap');
+  const resetSep    = document.getElementById('poll-reset-sep');
+  const resetWrap   = document.getElementById('poll-reset-wrap');
+  const resetDays   = document.getElementById('poll-reset-days');
+  const modeBadge   = document.getElementById('poll-mode-badge');
+  const voteButtons = document.querySelectorAll('#panel-zmrzlina .poll-vote-btn');
+  if(!leaderboard || voteButtons.length === 0) return;
+
+  if(maxEl) maxEl.textContent = POLL_MAX_VOTES;
+
+  // Pokus o Firebase, jinak lokální režim
+  initFirebase();
+
+  // Titulek žebříčku podle režimu
+  const titleEl = document.getElementById('poll-section-title');
+  if(titleEl){
+    titleEl.textContent = pollBackend === 'firebase'
+      ? '🏆 TOP 10 nejoblíbenějších'
+      : '🏆 Vaše TOP 3';
+  }
+
+  // Empty state text podle režimu
+  const emptyMainEl = document.getElementById('poll-empty');
+  if(emptyMainEl && pollBackend !== 'firebase'){
+    const mainText = emptyMainEl.firstChild;
+    if(mainText && mainText.nodeType === Node.TEXT_NODE){
+      mainText.textContent = 'Zatím jste nehlasovali.';
+    }
+  }
+
+  // Badge informující o režimu (viditelný v DevTools, volitelně v UI)
+  if(modeBadge){
+    if(pollBackend === 'firebase'){
+      modeBadge.textContent = 'Komunitní anketa';
+      modeBadge.classList.add('is-community');
+    } else {
+      modeBadge.textContent = 'Lokální režim';
+      modeBadge.classList.add('is-local');
+    }
+  }
+
+  /* Render stavu ankety */
+  function render(){
+    const my    = loadMyVotes();
+    const voted = my.voted || {};
+    const used  = Object.values(voted).filter(v => v).length;
+    const atMax = used >= POLL_MAX_VOTES;
+
+    // Aktualizace srdíček v menu (podle mých hlasů)
+    voteButtons.forEach(btn => {
+      const flavor = btn.dataset.flavor.replace(/&quot;/g,'"');
+      const didVote = !!voted[flavor];
+      btn.classList.toggle('has-votes', didVote);
+      btn.setAttribute('aria-pressed', didVote ? 'true' : 'false');
+      btn.disabled = atMax && !didVote;
+      const row = btn.closest('.menu-item');
+      if(row) row.classList.toggle('has-votes', didVote);
+    });
+
+    // Žebříček
+    const isCommunity = pollBackend === 'firebase';
+    const source      = isCommunity ? globalVotes : voted;
+
+    const sorted = Object.entries(source)
+      .filter(([,n]) => n > 0)
+      .sort((a,b) =>
+        (isCommunity ? (b[1] - a[1]) : 0)  // podle počtu hlasů (v komunitním režimu)
+        || a[0].localeCompare(b[0],'cs'))   // abecedně jako tiebreaker
+      .slice(0, 10);
+
+    leaderboard.innerHTML = '';
+    if(sorted.length === 0){
+      emptyEl.hidden = false;
+      leaderboard.hidden = true;
+    } else {
+      emptyEl.hidden = true;
+      leaderboard.hidden = false;
+      sorted.forEach(([name, num], idx) => {
+        const medals = ['🥇','🥈','🥉'];
+        const rank = idx + 1;
+        const rankDisplay = rank <= 3 ? medals[idx] : `${rank}.`;
+        const li = document.createElement('li');
+        li.className = `poll-lb-row rank-${rank}` + (voted[name] ? ' my-vote' : '');
+        const votesHtml = isCommunity
+          ? `<span class="poll-lb-votes-num">${num}</span><span class="poll-lb-votes-heart">♥</span>`
+          : `<span class="poll-lb-votes-heart">♥</span>`;
+        const myMark = voted[name] ? `<span class="poll-lb-mymark" title="Hlasoval jsem pro tuto">vaše</span>` : '';
+        li.innerHTML =
+          `<span class="poll-lb-rank">${rankDisplay}</span>` +
+          `<span class="poll-lb-name">${name}${myMark}</span>` +
+          `<span class="poll-lb-votes">${votesHtml}</span>`;
+        leaderboard.appendChild(li);
+      });
+    }
+
+    // Statistika nahoře
+    usedEl.textContent = used;
+
+    // V komunitním režimu zobrazíme i celkové počty
+    if(isCommunity){
+      const totalVotes   = Object.values(globalVotes).reduce((s,n)=>s+n, 0);
+      const flavorsCount = Object.values(globalVotes).filter(n=>n>0).length;
+      if(totalEl)   totalEl.textContent   = totalVotes;
+      if(flavorsEl) flavorsEl.textContent = flavorsCount;
+      if(totalWrap)   totalWrap.hidden   = false;
+      if(flavorsWrap) flavorsWrap.hidden = false;
+      if(totalSep)    totalSep.hidden    = false;
+      if(flavorsSep)  flavorsSep.hidden  = false;
+    } else {
+      if(totalWrap)   totalWrap.hidden   = true;
+      if(flavorsWrap) flavorsWrap.hidden = true;
+      if(totalSep)    totalSep.hidden    = true;
+      if(flavorsSep)  flavorsSep.hidden  = true;
+    }
+
+    // Dny do resetu — pouze pokud už jsou moje hlasy
+    if(my.startedAt){
+      const elapsed = Date.now() - my.startedAt;
+      const remainingMs = POLL_TTL_MS - elapsed;
+      const remainingDays = Math.max(0, Math.ceil(remainingMs / (24*60*60*1000)));
+      resetDays.textContent = remainingDays;
+      resetSep.hidden = false;
+      resetWrap.hidden = false;
+    } else {
+      resetSep.hidden = true;
+      resetWrap.hidden = true;
+    }
+  }
+
+  // Pokud je Firebase aktivní, předplatíme se na změny
+  if(pollBackend === 'firebase'){
+    subscribeGlobalVotes(render);
+  }
+
+  /* Handler pro hlasování (toggle) */
+  const zmrzlinaPanel = document.getElementById('panel-zmrzlina');
+  zmrzlinaPanel.addEventListener('click', async e => {
+    const btn = e.target.closest('.poll-vote-btn');
+    if(!btn) return;
+    const flavor = btn.dataset.flavor.replace(/&quot;/g,'"');
+
+    const my = loadMyVotes();
+    if(!my.voted) my.voted = {};
+    const didVote = !!my.voted[flavor];
+    const used    = Object.values(my.voted).filter(v => v).length;
+
+    if(didVote){
+      // Toggle off — odebrat
+      delete my.voted[flavor];
+      if(Object.values(my.voted).filter(v => v).length === 0) my.startedAt = null;
+      saveMyVotes(my);
+      await incrementGlobal(flavor, -1);
+    } else {
+      // Blokování pokud jsme na maximu
+      if(used >= POLL_MAX_VOTES) return;
+      my.voted[flavor] = true;
+      if(!my.startedAt) my.startedAt = Date.now();
+      saveMyVotes(my);
+      btn.classList.add('just-voted');
+      setTimeout(() => btn.classList.remove('just-voted'), 500);
+      await incrementGlobal(flavor, +1);
+    }
+
+    render();
+  });
+
+  /* Počáteční render */
+  render();
+})();
 
 /* ─────────────────────────────────────────
    GAME
@@ -2145,12 +3054,22 @@ document.querySelectorAll('.reveal, .reveal-left').forEach(el => {
   if(!el.closest('#hero')) revealObserver.observe(el);
 });
 
-/* ─────────────────────────────────────────
-   SEASONAL BANNER
-   ✏️  Upravte DAILY_FLAVORS pro dnešní nabídku
-───────────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════════════
+   ✏️  DENNÍ NABÍDKA PŘÍCHUTÍ — EDITUJ KAŽDÉ RÁNO
+   ─────────────────────────────────────────────────────────────────
+   Doporučeno 6–8 příchutí. Zobrazují se v horním pruhu webu
+   pod "🍦 Dnes máme". Píše se jednoduchý text v uvozovkách,
+   oddělený čárkou.
+
+   Příklad:
+   const DAILY_FLAVORS = [
+     'Pistáciová', 'Matcha a Karamel', 'Dubajská', 'Malina',
+     'Slaný karamel', 'Čokoláda', 'Vanilka', 'Jahoda RAW s liči'
+   ];
+═════════════════════════════════════════════════════════════════ */
 const DAILY_FLAVORS = [
-  'Matcha-Mango', 'Malina', 'Dubajská', 'Pekan-karamel', 'Pistáciová', 'Jahoda', 'Čokoláda', 'Slaný karamel'
+  'Matcha a Karamel', 'Pekanový Karamel', 'Malina', 'Dubajská',
+  'Pistáciová', 'Jahoda', 'Čokoláda', 'Slaný karamel'
 ];
 
 (function initBanner(){
