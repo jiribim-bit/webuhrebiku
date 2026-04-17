@@ -193,6 +193,39 @@
       background:none; font-family:'Raleway',sans-serif;
     }
     .btn-outline:hover { background:var(--accent); color:var(--bg); }
+
+    .btn-primary {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:.85rem 1.8rem;
+      border:1px solid var(--accent-bright);
+      background:var(--accent-bright); color:var(--bg);
+      text-decoration:none;
+      font-family:'Raleway',sans-serif; font-size:.72rem;
+      letter-spacing:.22em; text-transform:uppercase; font-weight:500;
+      border-radius:999px; cursor:pointer;
+      transition:all .25s;
+    }
+    .btn-primary:hover {
+      transform:translateY(-2px);
+      box-shadow:0 8px 24px rgba(0,0,0,.15);
+    }
+    .btn-primary:active { transform:translateY(0); }
+
+    .btn-ghost {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:.85rem 1.8rem;
+      border:1px solid var(--border);
+      background:none; color:var(--text);
+      text-decoration:none;
+      font-family:'Raleway',sans-serif; font-size:.72rem;
+      letter-spacing:.22em; text-transform:uppercase; font-weight:400;
+      border-radius:999px; cursor:pointer;
+      transition:all .25s;
+    }
+    .btn-ghost:hover {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
     .scroll-hint {
       position:absolute; bottom:2.2rem; left:50%; transform:translateX(-50%);
       display:flex; flex-direction:column; align-items:center; gap:.4rem;
@@ -1219,26 +1252,388 @@
     }
 
     /* ─── REVIEWS ────────────────────── */
-    #reviews { }
+    .reviews-header {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:2rem; flex-wrap:wrap;
+      max-width:900px; margin:0 auto 2.5rem;
+      padding:1.8rem 2rem;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:16px;
+    }
+    .reviews-header-rating {
+      display:flex; flex-direction:column; gap:.4rem;
+    }
+    .reviews-header-cta {
+      display:flex; gap:.7rem; flex-wrap:wrap;
+    }
+    .reviews-stars {
+      display:flex; gap:.2rem;
+    }
+    .review-star {
+      color:#FFC83D; font-size:1.6rem;
+      text-shadow:0 1px 2px rgba(0,0,0,.1);
+    }
+    .review-stars-small .review-star { font-size:1rem; }
+    .reviews-rating {
+      display:flex; align-items:baseline; gap:.4rem;
+    }
+    .reviews-rating-num {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:800; font-size:2.4rem; line-height:1;
+      color:var(--text);
+    }
+    .reviews-rating-outof {
+      font-family:'Raleway',sans-serif;
+      font-weight:400; font-size:.85rem;
+      letter-spacing:.12em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
     .reviews-grid {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem;
+      display:grid; grid-template-columns:repeat(3, 1fr);
+      gap:1.2rem;
     }
     .review-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:12px;
+      padding:1.6rem;
+      display:flex; flex-direction:column; gap:.9rem;
+      transition:transform .25s, border-color .25s;
     }
-    .review-stars { color: #FFD700; font-size: 1rem; letter-spacing: .1em; }
+    .review-card:hover {
+      transform:translateY(-2px);
+      border-color:var(--accent);
+    }
     .review-text {
-      font-family: 'Palatino Linotype', Palatino, Georgia, serif;
-      font-style: italic; font-size: 1rem; line-height: 1.65;
-      color: var(--text); flex: 1;
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic; font-size:1.05rem; line-height:1.55;
+      color:var(--text); flex:1;
+      margin:0;
     }
     .review-author {
-      font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
-      color: var(--muted);
+      font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--muted);
     }
-    @media(max-width:768px){ .reviews-grid { grid-template-columns: 1fr; } }
-    @media(max-width:900px){ .reviews-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:768px) {
+      .reviews-grid { grid-template-columns:1fr; }
+      .reviews-header { flex-direction:column; text-align:center; padding:1.4rem; }
+      .reviews-header-rating { align-items:center; }
+      .reviews-header-cta { justify-content:center; }
+    }
+    @media(min-width:768px) and (max-width:1024px) {
+      .reviews-grid { grid-template-columns:1fr 1fr; }
+    }
+
+    /* ─── HERO STATUS (Countdown + Open/Closed) ───── */
+    .hero-status {
+      margin: 0 auto 2rem;
+      display:flex; justify-content:center;
+      max-width:92vw;
+    }
+    .hero-countdown[hidden],
+    .hero-livestatus[hidden],
+    .nav-status[hidden] { display:none !important; }
+    .hero-countdown {
+      text-align:center;
+      padding:1.2rem 1.8rem;
+      background:var(--bg2);
+      border:1px solid var(--border);
+      border-radius:16px;
+    }
+    .hero-countdown-label {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600; font-size:.78rem;
+      letter-spacing:.26em; text-transform:uppercase;
+      color:var(--muted); margin-bottom:.7rem;
+    }
+    .hero-countdown-grid {
+      display:flex; justify-content:center; gap:1rem;
+      margin-bottom:.6rem;
+    }
+    .hero-cd-unit {
+      display:flex; flex-direction:column;
+      align-items:center;
+      min-width:3.2rem;
+    }
+    .hero-cd-num {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:800; font-size:2.4rem; line-height:1;
+      color:var(--accent-bright);
+      font-variant-numeric:tabular-nums;
+    }
+    .hero-cd-lbl {
+      font-size:.65rem; letter-spacing:.22em;
+      text-transform:uppercase; color:var(--muted);
+      margin-top:.3rem;
+    }
+    .hero-countdown-date {
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic; font-size:.95rem;
+      color:var(--accent);
+      padding-top:.5rem;
+      border-top:1px solid var(--border);
+    }
+
+    .hero-livestatus {
+      display:inline-flex; align-items:center; gap:.7rem;
+      padding:.7rem 1.3rem;
+      background:var(--bg2);
+      border:1px solid var(--border);
+      border-radius:999px;
+    }
+    .hero-livestatus-dot {
+      width:10px; height:10px; border-radius:50%;
+      background:#888;
+      box-shadow:0 0 0 0 rgba(136,136,136,.6);
+    }
+    .hero-livestatus-dot.is-open {
+      background:#3ec28b;
+      animation:pulseOpen 2s ease-out infinite;
+    }
+    .hero-livestatus-dot.is-closed { background:#e56b6b; }
+    @keyframes pulseOpen {
+      0%   { box-shadow:0 0 0 0 rgba(62,194,139,.7); }
+      70%  { box-shadow:0 0 0 10px rgba(62,194,139,0); }
+      100% { box-shadow:0 0 0 0 rgba(62,194,139,0); }
+    }
+    .hero-livestatus-text {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600; font-size:.92rem;
+      letter-spacing:.22em; text-transform:uppercase;
+      color:var(--text);
+    }
+    .hero-livestatus-sub {
+      font-size:.78rem; color:var(--muted);
+      letter-spacing:.05em;
+    }
+
+    /* Nav status indikátor */
+    .nav-status {
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.3rem .7rem;
+      background:var(--bg2);
+      border:1px solid var(--border);
+      border-radius:999px;
+      margin-left:1rem;
+    }
+    .nav-status-dot {
+      width:7px; height:7px; border-radius:50%;
+      background:#888;
+    }
+    .nav-status.is-open .nav-status-dot {
+      background:#3ec28b;
+      box-shadow:0 0 6px rgba(62,194,139,.6);
+    }
+    .nav-status.is-closed .nav-status-dot { background:#e56b6b; }
+    .nav-status-text {
+      font-size:.62rem; letter-spacing:.22em;
+      text-transform:uppercase; color:var(--muted);
+      font-weight:500;
+    }
+    .nav-status.is-open .nav-status-text { color:var(--text); }
+    @media(max-width:900px) {
+      .nav-status { display:none; }
+      .hero-countdown { padding:1rem 1.2rem; }
+      .hero-cd-unit { min-width:2.6rem; }
+      .hero-cd-num { font-size:1.9rem; }
+    }
+
+    /* ─── INSTAGRAM FEED ─────────────── */
+    .ig-intro {
+      text-align:center; max-width:540px; margin:0 auto 2.4rem;
+      color:var(--muted); font-size:1rem; line-height:1.6;
+    }
+    .ig-grid {
+      display:grid; grid-template-columns:repeat(3, 1fr);
+      gap:1rem; margin-bottom:2rem;
+    }
+    .ig-item {
+      position:relative; aspect-ratio:1/1; overflow:hidden;
+      background:var(--bg3); border-radius:8px;
+      text-decoration:none; color:inherit;
+      transition:transform .3s;
+      display:block;
+    }
+    .ig-item:hover { transform:scale(1.03); }
+    .ig-item img {
+      width:100%; height:100%; object-fit:cover;
+      transition:opacity .3s;
+    }
+    .ig-item-overlay {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.55); color:#fff;
+      opacity:0; transition:opacity .3s;
+      text-align:center; padding:1rem;
+      font-size:.85rem; line-height:1.4;
+    }
+    .ig-item:hover .ig-item-overlay { opacity:1; }
+    .ig-item-placeholder {
+      width:100%; height:100%;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:.6rem; color:var(--muted);
+      border:1px dashed var(--border);
+      font-size:.8rem; padding:1rem; text-align:center;
+    }
+    .ig-item-placeholder-icon { font-size:1.8rem; }
+    .ig-cta { text-align:center; }
+    @media(max-width:600px) {
+      .ig-grid { grid-template-columns:repeat(2, 1fr); gap:.7rem; }
+    }
+
+    /* ─── QUIZ ──────────────────────── */
+    .quiz-intro {
+      text-align:center; max-width:560px; margin:0 auto 2.5rem;
+      color:var(--muted); font-size:1rem; line-height:1.6;
+    }
+    .quiz-wrap {
+      max-width:620px; margin:0 auto;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:18px;
+      padding:3rem 2rem;
+      min-height:360px;
+      position:relative;
+    }
+    .quiz-screen { display:none; text-align:center; }
+    .quiz-screen.is-active { display:block; animation:quizFadeIn .4s ease; }
+    @keyframes quizFadeIn {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .quiz-intro-visual, .quiz-result-visual {
+      font-size:3.5rem; line-height:1; margin-bottom:1rem;
+    }
+    .quiz-heading {
+      font-family:'Cormorant Garamond',serif;
+      font-weight:400; font-size:clamp(1.5rem, 3.5vw, 2.2rem);
+      color:var(--text); margin:0 0 .6rem;
+      line-height:1.2;
+    }
+    .quiz-sub {
+      color:var(--muted); font-size:.95rem;
+      margin:0 0 1.8rem; line-height:1.5;
+    }
+    .quiz-progress {
+      width:100%; height:3px; background:var(--bg3);
+      border-radius:3px; margin-bottom:.8rem;
+      overflow:hidden;
+    }
+    .quiz-progress-bar {
+      height:100%; background:var(--accent-bright);
+      width:0%; transition:width .4s ease;
+    }
+    .quiz-step {
+      font-size:.7rem; letter-spacing:.22em;
+      text-transform:uppercase; color:var(--muted);
+      margin-bottom:1.2rem;
+    }
+    .quiz-options {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:.7rem; margin-top:1.6rem;
+    }
+    .quiz-option {
+      padding:1rem 1.2rem;
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:10px;
+      font-family:'Raleway',sans-serif; font-size:.92rem;
+      color:var(--text); cursor:pointer;
+      transition:all .2s;
+      text-align:left;
+    }
+    .quiz-option:hover {
+      border-color:var(--accent);
+      transform:translateX(3px);
+    }
+    .quiz-result-label {
+      font-size:.7rem; letter-spacing:.3em;
+      text-transform:uppercase; color:var(--muted);
+      margin-bottom:.4rem;
+    }
+    .quiz-result-name {
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic; font-weight:400;
+      font-size:clamp(1.8rem, 5vw, 2.8rem);
+      color:var(--accent-bright);
+      margin:0 0 1rem;
+    }
+    .quiz-result-desc {
+      color:var(--text); font-size:1rem; line-height:1.6;
+      max-width:460px; margin:0 auto 2rem;
+    }
+    .quiz-actions {
+      display:flex; justify-content:center; gap:.8rem; flex-wrap:wrap;
+    }
+    @media(max-width:640px) {
+      .quiz-wrap { padding:2rem 1.2rem; }
+      .quiz-options { grid-template-columns:1fr; }
+    }
+
+    /* ─── REFER A FRIEND ──────────────── */
+    .refer-card {
+      max-width:620px; margin:0 auto;
+      text-align:center;
+      padding:3rem 2rem;
+      background:linear-gradient(135deg, rgba(184,188,200,.05), rgba(229,107,138,.04));
+      border:1px solid var(--border);
+      border-radius:18px;
+    }
+    .refer-visual {
+      font-size:2.5rem; margin-bottom:1rem;
+      letter-spacing:.3em;
+    }
+    .refer-title {
+      font-family:'Cormorant Garamond',serif;
+      font-weight:400; font-size:clamp(1.6rem, 4vw, 2.4rem);
+      color:var(--text); margin:0 0 .8rem;
+    }
+    .refer-sub {
+      color:var(--muted); font-size:1rem; line-height:1.6;
+      margin:0 0 2rem;
+    }
+    .refer-actions {
+      display:flex; justify-content:center; gap:.8rem; flex-wrap:wrap;
+    }
+
+    /* ─── FAQ ─────────────────────────── */
+    .faq-list {
+      max-width:780px; margin:0 auto;
+      display:flex; flex-direction:column; gap:.6rem;
+    }
+    .faq-item {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:10px; padding:0;
+      transition:border-color .25s;
+    }
+    .faq-item[open] { border-color:var(--accent); }
+    .faq-item summary {
+      padding:1.2rem 3rem 1.2rem 1.4rem;
+      cursor:pointer; user-select:none;
+      font-family:'Raleway',sans-serif; font-weight:500;
+      font-size:1rem; color:var(--text);
+      position:relative;
+      list-style:none;
+      line-height:1.4;
+    }
+    .faq-item summary::-webkit-details-marker { display:none; }
+    .faq-item summary::after {
+      content:'+';
+      position:absolute; right:1.4rem; top:50%;
+      transform:translateY(-50%);
+      font-size:1.6rem; line-height:1;
+      color:var(--accent);
+      transition:transform .25s;
+    }
+    .faq-item[open] summary::after {
+      content:'−';
+      transform:translateY(-50%) rotate(180deg);
+    }
+    .faq-a {
+      padding:0 1.4rem 1.3rem;
+      color:var(--muted); font-size:.95rem;
+      line-height:1.65;
+    }
+    .faq-a a { color:var(--accent); text-decoration:underline; text-decoration-color:var(--border); }
+    .faq-a a:hover { text-decoration-color:var(--accent); }
 
     /* ─── FLOATING CTA ───────────────── */
     #floating-cta {
@@ -1311,10 +1706,15 @@
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="#hero">U Hřebíků</a>
+  <span class="nav-status" id="nav-status" hidden>
+    <span class="nav-status-dot"></span>
+    <span class="nav-status-text" id="nav-status-text">Otevřeno</span>
+  </span>
   <ul class="nav-links">
     <li><a href="#menu">Menu</a></li>
     <li><a href="#poll">Anketa</a></li>
     <li><a href="#gallery">Galerie</a></li>
+    <li><a href="#faq">FAQ</a></li>
     <li><a href="#hours">Provozní doba</a></li>
     <li><a href="#map-section">Kde jsme</a></li>
     <li><a href="#game-section">Hra</a></li>
@@ -1329,6 +1729,7 @@
   <a href="#menu"        onclick="toggleMenu()">Menu</a>
   <a href="#poll"        onclick="toggleMenu()">Anketa</a>
   <a href="#gallery"     onclick="toggleMenu()">Galerie</a>
+  <a href="#faq"         onclick="toggleMenu()">FAQ</a>
   <a href="#hours"       onclick="toggleMenu()">Provozní doba</a>
   <a href="#map-section" onclick="toggleMenu()">Kde jsme</a>
   <a href="#game-section"onclick="toggleMenu()">Hra</a>
@@ -1375,6 +1776,27 @@
 
     <div class="hero-tip-rotator reveal stagger-3" id="hero-tip-rotator" aria-live="polite">
       <span class="hero-tip-text" id="hero-tip-text">Ochutnejte naši řemeslnou zmrzlinu</span>
+    </div>
+
+    <!-- Countdown do otevření sezóny / živý stav otevřeno-zavřeno -->
+    <div class="hero-status reveal stagger-3" id="hero-status" hidden>
+      <!-- Před otevřením: countdown -->
+      <div class="hero-countdown" id="hero-countdown" hidden>
+        <div class="hero-countdown-label">🍦 Otvíráme sezónu za</div>
+        <div class="hero-countdown-grid">
+          <div class="hero-cd-unit"><span class="hero-cd-num" id="cd-days">0</span><span class="hero-cd-lbl">dní</span></div>
+          <div class="hero-cd-unit"><span class="hero-cd-num" id="cd-hours">00</span><span class="hero-cd-lbl">h</span></div>
+          <div class="hero-cd-unit"><span class="hero-cd-num" id="cd-mins">00</span><span class="hero-cd-lbl">min</span></div>
+          <div class="hero-cd-unit"><span class="hero-cd-num" id="cd-secs">00</span><span class="hero-cd-lbl">s</span></div>
+        </div>
+        <div class="hero-countdown-date">30. dubna 2026</div>
+      </div>
+      <!-- V sezóně: živý stav Otevřeno/Zavřeno -->
+      <div class="hero-livestatus" id="hero-livestatus" hidden>
+        <span class="hero-livestatus-dot" id="hero-livestatus-dot"></span>
+        <span class="hero-livestatus-text" id="hero-livestatus-text">Otevřeno</span>
+        <span class="hero-livestatus-sub" id="hero-livestatus-sub">Zavíráme v 20:00</span>
+      </div>
     </div>
 
     <a href="#menu" class="btn-outline reveal stagger-4">Prohlédnout menu</a>
@@ -1553,6 +1975,149 @@
   </div>
 </section>
 
+<!-- INSTAGRAM FEED -->
+<!--
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  JAK AKTUALIZOVAT INSTAGRAM FEED                                    │
+  │  Níže v poli IG_POSTS upravte odkazy na své nejnovější příspěvky.  │
+  │  Formát: { url: "https://instagram.com/p/ABC123/",                  │
+  │            img: "https://nahled-fotky.jpg",                         │
+  │            caption: "Krátký popis" }                                │
+  │  Místo nahledu fotky můžete použít i přímý URL obrázku posta.       │
+  │  Pro skutečný fetch z IG API je nutný Facebook Graph API token.     │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<section id="instagram" class="sec-full sec-bg">
+  <div class="sec-inner">
+    <div class="sec-head reveal">
+      <span class="sec-label">Sledujte nás</span>
+      <h2 class="sec-title">Instagram</h2>
+      <div class="divider"></div>
+    </div>
+    <p class="ig-intro reveal">Podívejte se, co se u nás děje — nové příchutě, akce a každodenní radosti.</p>
+    <div class="ig-grid" id="ig-grid"></div>
+    <div class="ig-cta reveal">
+      <a href="https://www.instagram.com/uhrebiku" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.45rem;vertical-align:-3px;"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/></svg>
+        @uhrebiku — sledovat na Instagramu
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FLAVOR QUIZ -->
+<section id="quiz" class="sec-full">
+  <div class="sec-inner">
+    <div class="sec-head reveal">
+      <span class="sec-label">Hravá záležitost</span>
+      <h2 class="sec-title">Která příchuť jsi ty?</h2>
+      <div class="divider"></div>
+    </div>
+    <p class="quiz-intro reveal">5 rychlých otázek — zjistěte, která z našich řemeslných zmrzlin se k vám nejlíp hodí. A pak se o výsledek podělte!</p>
+
+    <div class="quiz-wrap reveal stagger-1">
+      <!-- Intro -->
+      <div class="quiz-screen is-active" id="quiz-intro">
+        <div class="quiz-intro-visual">🍦</div>
+        <h3 class="quiz-heading">Připraveni?</h3>
+        <p class="quiz-sub">Odpovězte na pár otázek a my vám řekneme, která zmrzlina je vaše.</p>
+        <button class="btn-primary" onclick="quizStart()">Spustit kvíz</button>
+      </div>
+
+      <!-- Questions rendered here -->
+      <div class="quiz-screen" id="quiz-question">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar"></div></div>
+        <div class="quiz-step" id="quiz-step">Otázka 1 z 5</div>
+        <h3 class="quiz-heading" id="quiz-heading">?</h3>
+        <div class="quiz-options" id="quiz-options"></div>
+      </div>
+
+      <!-- Result -->
+      <div class="quiz-screen" id="quiz-result">
+        <div class="quiz-result-visual" id="quiz-result-emoji">🍦</div>
+        <div class="quiz-result-label">Vaše příchuť je</div>
+        <h3 class="quiz-result-name" id="quiz-result-name">—</h3>
+        <p class="quiz-result-desc" id="quiz-result-desc">—</p>
+        <div class="quiz-actions">
+          <button class="btn-primary" onclick="quizShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Sdílet výsledek
+          </button>
+          <button class="btn-ghost" onclick="quizRestart()">Zkusit znovu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REFER A FRIEND -->
+<section id="refer" class="sec-full sec-bg">
+  <div class="sec-inner">
+    <div class="refer-card reveal">
+      <div class="refer-visual">🍦👋🍦</div>
+      <h2 class="refer-title">Přiveď kamaráda na kopeček</h2>
+      <p class="refer-sub">Líbí se vám u nás? Pošlete odkaz kamarádovi — oběma zpříjemní den.</p>
+      <div class="refer-actions">
+        <button class="btn-primary" id="refer-share-btn" onclick="referShare()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span id="refer-share-label">Sdílet</span>
+        </button>
+        <button class="btn-ghost" id="refer-copy-btn" onclick="referCopy()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="refer-copy-label">Zkopírovat odkaz</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Časté dotazy</span>
+    <h2 class="sec-title">FAQ</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="faq-list reveal stagger-1">
+    <details class="faq-item">
+      <summary class="faq-q">Kdy máte otevřeno?</summary>
+      <div class="faq-a">Sezónu otvíráme 30. dubna 2026. Přesný rozvrh najdete v sekci <a href="#hours">Provozní doba</a>. V průběhu sezóny jsme obvykle otevřeno každý den — aktuální stav uvidíte nahoře na stránce.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Můžu u vás zaplatit kartou?</summary>
+      <div class="faq-a">Ano, přijímáme platby kartou (kontaktně i bezkontaktně), Apple Pay a Google Pay. Samozřejmě bereme i hotovost.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Máte bezlaktózovou nebo veganskou zmrzlinu?</summary>
+      <div class="faq-a">Ano! Nabízíme řadu sorbetů (bez mléka), RAW příchutí bez přidaného cukru a speciálních variant pro různá dietní omezení. Stačí se zeptat u pultu — rádi vám poradíme.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Jsou vaše zmrzliny opravdu řemeslné?</summary>
+      <div class="faq-a">Ano. Zmrzliny vyrábíme rodinně z čerstvých surovin — pravé ovoce, ořechy, čokoláda a mléko. Žádné umělé příchutě ani barviva. Více v sekci <a href="#menu">Menu</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Kolik druhů příchutí nabízíte?</summary>
+      <div class="faq-a">Celkem máme přes 85 příchutí, ze kterých v nabídce rotujeme. Aktuálně dostupné příchutě uvidíte nahoře na stránce v pruhu „Dnes máme". Kompletní seznam je v sekci <a href="#menu">Menu → Zmrzlina</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Dá se u vás najíst něco kromě zmrzliny?</summary>
+      <div class="faq-a">Určitě — kromě zmrzliny u nás dostanete čerstvou pizzu, hranolky, kynuté kuličky (sladké i slané), sýrové nuggets a další pochoutky. Z nápojů kávu, limonády, pivo a víno. Celý výběr najdete v <a href="#menu">Menu</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Kde přesně vás najdu?</summary>
+      <div class="faq-a">Náš stánek je přímo v centru Tečovic u Zlína. Přesnou polohu a navigaci najdete v sekci <a href="#map-section">Kde jsme</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Jak můžu hlasovat pro svou oblíbenou příchuť?</summary>
+      <div class="faq-a">V sekci <a href="#menu">Menu → Zmrzlina</a> klikněte na srdíčko ♥ u příchutí, které máte nejraději. Můžete vybrat až 3 své favority a výsledky se sčítají napříč všemi návštěvníky — aktuální TOP 10 najdete v sekci <a href="#poll">Anketa</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Můžu u vás zaplatit Multisport / jinou kartou benefitů?</summary>
+      <div class="faq-a">Aktuálně nejsme zapojeni v programu Multisport. Pokud máte zájem nebo jste narazili na jinou konkrétní potřebu, napište nám zprávu na Facebook nebo Instagram.</div>
+    </details>
+  </div>
+</section>
+
 <!-- HOURS -->
 <section id="hours" class="sec">
   <div class="sec-head reveal">
@@ -1657,25 +2222,56 @@
 </div>
 
 <!-- REVIEWS -->
+<!--
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  NASTAVENÍ GOOGLE RECENZÍ                                           │
+  │  1. Najděte svůj Place ID zde:                                      │
+  │     https://developers.google.com/maps/documentation/places/        │
+  │     web-service/place-id                                            │
+  │  2. Nahraďte ChIJFcJ1LFwME0cRxalCFY0oH2c v obou href atributech níže              │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
 <section id="reviews" class="sec">
   <div class="sec-head reveal">
     <span class="sec-label">Co říkají zákazníci</span>
     <h2 class="sec-title">Recenze</h2>
     <div class="divider"></div>
   </div>
+
+  <div class="reviews-header reveal">
+    <div class="reviews-header-rating">
+      <div class="reviews-stars">
+        <span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span>
+      </div>
+      <div class="reviews-rating">
+        <span class="reviews-rating-num">4.9</span>
+        <span class="reviews-rating-outof">/ 5 na Google</span>
+      </div>
+    </div>
+    <div class="reviews-header-cta">
+      <a href="https://search.google.com/local/writereview?placeid=ChIJFcJ1LFwME0cRxalCFY0oH2c" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="margin-right:.45rem;vertical-align:-2px;"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 19.445l-7.416 3.968 1.48-8.279L0 9.306l8.332-1.151z"/></svg>
+        Napsat recenzi
+      </a>
+      <a href="https://search.google.com/local/reviews?placeid=ChIJFcJ1LFwME0cRxalCFY0oH2c" target="_blank" rel="noopener" class="btn-ghost">
+        Všechny recenze
+      </a>
+    </div>
+  </div>
+
   <div class="reviews-grid">
     <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
+      <div class="review-stars review-stars-small"><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span></div>
       <p class="review-text">„Super obsluha, asi moje nové oblíbené místo."</p>
       <div class="review-author">— Martin Hořák</div>
     </div>
     <div class="review-card reveal stagger-1">
-      <div class="review-stars">★★★★★</div>
+      <div class="review-stars review-stars-small"><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span></div>
       <p class="review-text">„Super krámek, super ceny!"</p>
       <div class="review-author">— Filip Cendelín</div>
     </div>
     <div class="review-card reveal stagger-2">
-      <div class="review-stars">★★★★★</div>
+      <div class="review-stars review-stars-small"><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span><span class="review-star">★</span></div>
       <p class="review-text">„Skvělý stánek, obsluha na jedničku 👍"</p>
       <div class="review-author">— Adéla Kovářová</div>
     </div>
@@ -3140,6 +3736,350 @@ function closeBanner(){
     }, 500); // match CSS transition duration
   }, 3800);
 })();
+
+/* ═══════════════════════════════════════════════════════════════════
+   OPENING COUNTDOWN + ŽIVÝ STAV OTEVŘENO/ZAVŘENO
+   ─────────────────────────────────────────────────────────────────
+   • Před 30.4.2026  →  countdown do otevření sezóny
+   • Po 30.4.2026    →  živý stav Otevřeno/Zavřeno podle času
+   • Provozní hodiny lze upravit v OPEN_HOURS níže
+═══════════════════════════════════════════════════════════════════ */
+const SEASON_OPEN_DATE = new Date('2026-04-30T11:00:00+02:00'); // otevření v 11:00
+const OPEN_HOURS = {
+  // 0=neděle, 1=pondělí, … 6=sobota
+  0: { open: '11:00', close: '20:00' },
+  1: { open: '11:00', close: '20:00' },
+  2: { open: '11:00', close: '20:00' },
+  3: { open: '11:00', close: '20:00' },
+  4: { open: '11:00', close: '20:00' },
+  5: { open: '11:00', close: '21:00' },
+  6: { open: '11:00', close: '21:00' }
+};
+
+function timeToMinutes(t){
+  const [h,m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+function minutesToTime(mins){
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+}
+
+function getCurrentStatus(now){
+  const day = now.getDay();
+  const today = OPEN_HOURS[day];
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  if(!today){
+    return { isOpen: false, text: 'Zavřeno', sub: 'Dnes máme zavřeno' };
+  }
+  const openMins  = timeToMinutes(today.open);
+  const closeMins = timeToMinutes(today.close);
+
+  if(nowMins >= openMins && nowMins < closeMins){
+    return { isOpen: true, text: 'Otevřeno', sub: 'Zavíráme v ' + today.close };
+  }
+
+  // Najdi další otevírací čas
+  if(nowMins < openMins){
+    return { isOpen: false, text: 'Zavřeno', sub: 'Otvíráme v ' + today.open };
+  }
+  // Po zavírací — najdeme další den
+  for(let i = 1; i <= 7; i++){
+    const nextDay = (day + i) % 7;
+    const nextHours = OPEN_HOURS[nextDay];
+    if(nextHours){
+      const dayNames = ['neděli','pondělí','úterý','středu','čtvrtek','pátek','sobotu'];
+      const prefix = i === 1 ? 'zítra' : 'v ' + dayNames[nextDay];
+      return { isOpen: false, text: 'Zavřeno', sub: 'Otvíráme ' + prefix + ' v ' + nextHours.open };
+    }
+  }
+  return { isOpen: false, text: 'Zavřeno', sub: '' };
+}
+
+(function initHeroStatus(){
+  const statusWrap    = document.getElementById('hero-status');
+  const countdownEl   = document.getElementById('hero-countdown');
+  const livestatusEl  = document.getElementById('hero-livestatus');
+  const cdDays        = document.getElementById('cd-days');
+  const cdHours       = document.getElementById('cd-hours');
+  const cdMins        = document.getElementById('cd-mins');
+  const cdSecs        = document.getElementById('cd-secs');
+  const lsDot         = document.getElementById('hero-livestatus-dot');
+  const lsText        = document.getElementById('hero-livestatus-text');
+  const lsSub         = document.getElementById('hero-livestatus-sub');
+  const navStatus     = document.getElementById('nav-status');
+  const navStatusText = document.getElementById('nav-status-text');
+
+  if(!statusWrap) return;
+  statusWrap.hidden = false;
+
+  function update(){
+    const now = new Date();
+    const msLeft = SEASON_OPEN_DATE - now;
+
+    if(msLeft > 0){
+      // Před otevřením sezóny — countdown
+      countdownEl.hidden  = false;
+      livestatusEl.hidden = true;
+      if(navStatus) navStatus.hidden = true;
+
+      const days  = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins  = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const secs  = Math.floor((msLeft % (1000 * 60)) / 1000);
+      cdDays.textContent  = days;
+      cdHours.textContent = String(hours).padStart(2,'0');
+      cdMins.textContent  = String(mins).padStart(2,'0');
+      cdSecs.textContent  = String(secs).padStart(2,'0');
+    } else {
+      // V sezóně — živý stav
+      countdownEl.hidden  = true;
+      livestatusEl.hidden = false;
+
+      const s = getCurrentStatus(now);
+      lsDot.className = 'hero-livestatus-dot ' + (s.isOpen ? 'is-open' : 'is-closed');
+      lsText.textContent = s.text;
+      lsSub.textContent  = s.sub;
+
+      if(navStatus){
+        navStatus.hidden = false;
+        navStatus.className = 'nav-status ' + (s.isOpen ? 'is-open' : 'is-closed');
+        navStatusText.textContent = s.text;
+      }
+    }
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   INSTAGRAM FEED — ruční seznam příspěvků
+   ─────────────────────────────────────────────────────────────────
+   Aktualizujte pole IG_POSTS níže. Každý objekt má:
+     url     — odkaz na Instagram příspěvek
+     img     — URL obrázku (náhled)
+     caption — krátký popis (zobrazí se při hoveru)
+
+   Pokud nemáte obrázek, nechte pole prázdné a zobrazí se placeholder.
+═══════════════════════════════════════════════════════════════════ */
+const IG_POSTS = [
+  // Příklad — nahraďte vlastními příspěvky:
+  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Nové příchutě tento týden 🍦' },
+  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Dubajská — novinka v nabídce' },
+  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Ráno ve stánku' },
+  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Víkendové radosti' },
+  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Káva i zmrzka' },
+  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Naši zákazníci' }
+];
+
+(function initInstagramFeed(){
+  const grid = document.getElementById('ig-grid');
+  if(!grid) return;
+
+  grid.innerHTML = '';
+  IG_POSTS.forEach((post, i) => {
+    const a = document.createElement('a');
+    a.className = 'ig-item';
+    a.href = post.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.setAttribute('aria-label', post.caption || ('Instagram příspěvek ' + (i+1)));
+
+    if(post.img){
+      a.innerHTML =
+        '<img src="' + post.img + '" alt="' + (post.caption || '') + '" loading="lazy">' +
+        '<div class="ig-item-overlay">' + (post.caption || 'Otevřít na Instagramu') + '</div>';
+    } else {
+      a.innerHTML =
+        '<div class="ig-item-placeholder">' +
+          '<div class="ig-item-placeholder-icon">📷</div>' +
+          '<div>' + (post.caption || 'Instagram') + '</div>' +
+        '</div>';
+    }
+    grid.appendChild(a);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   FLAVOR QUIZ — "Která příchuť jsi ty?"
+   5 otázek → výsledek s popisem → sdílení
+═══════════════════════════════════════════════════════════════════ */
+const QUIZ_QUESTIONS = [
+  {
+    q: 'Jaká je tvoje ideální neděle?',
+    a: [
+      { text: 'Dlouhá procházka v přírodě',    tags: ['classic', 'fresh'] },
+      { text: 'Sedět v kavárně s dobrou knihou', tags: ['rich', 'sophisticated'] },
+      { text: 'Dobrodružství a nové zážitky',    tags: ['bold', 'exotic'] },
+      { text: 'Relaxace doma s rodinou',         tags: ['comfort', 'fresh'] }
+    ]
+  },
+  {
+    q: 'Čemu dáváš přednost?',
+    a: [
+      { text: 'Sladké a krémové',     tags: ['rich', 'comfort'] },
+      { text: 'Svěží a ovocné',       tags: ['fresh', 'classic'] },
+      { text: 'Intenzivní a výrazné', tags: ['bold', 'sophisticated'] },
+      { text: 'Exotické a neznámé',   tags: ['exotic', 'bold'] }
+    ]
+  },
+  {
+    q: 'Jaký film si rád vybereš?',
+    a: [
+      { text: 'Nadčasovou klasiku', tags: ['classic', 'sophisticated'] },
+      { text: 'Rodinnou komedii',   tags: ['comfort'] },
+      { text: 'Akční thriller',     tags: ['bold'] },
+      { text: 'Dokument o cestách', tags: ['exotic', 'fresh'] }
+    ]
+  },
+  {
+    q: 'Co by nesmělo chybět u piknik košíku?',
+    a: [
+      { text: 'Čerstvé ovoce',         tags: ['fresh'] },
+      { text: 'Kvalitní čokoláda',     tags: ['rich', 'sophisticated'] },
+      { text: 'Domácí buchty od babičky', tags: ['comfort', 'classic'] },
+      { text: 'Něco neočekávaného',    tags: ['exotic', 'bold'] }
+    ]
+  },
+  {
+    q: 'Jaká barva tě láká?',
+    a: [
+      { text: 'Tlumené pastelové',  tags: ['classic', 'comfort'] },
+      { text: 'Výrazná a teplá',    tags: ['rich', 'bold'] },
+      { text: 'Svěží a světlá',     tags: ['fresh'] },
+      { text: 'Temná a tajemná',    tags: ['sophisticated', 'exotic'] }
+    ]
+  }
+];
+
+const QUIZ_RESULTS = {
+  classic:        { name: 'Vanilka',                 emoji: '🍦', desc: 'Jsi nadčasový, spolehlivý a milovaný všemi. Klasická volba, která nikdy nezklame — prostě dokonalá rovnováha.' },
+  fresh:          { name: 'Malina RAW',              emoji: '🫐', desc: 'Jsi osvěžující, lehký a plný života. Ovocné příchutě ti sedí nejvíc — svěžest je tvoje silná stránka.' },
+  rich:           { name: 'Slaný karamel',           emoji: '🍯', desc: 'Máš rád věci s hloubkou a charakterem. Sladko-slaná kombinace je přesně o tobě — plná překvapení.' },
+  bold:           { name: 'Dubajská',                emoji: '✨', desc: 'Jsi odvážný, výrazný a trendy. Miluješ nové zážitky a nebojíš se experimentovat — přesně jako naše nejnovější hvězda.' },
+  exotic:         { name: 'Matcha a Karamel',        emoji: '🍵', desc: 'Máš rád neobvyklé kombinace a exotiku. Nejsi tuctový — a to se ti líbí. Spojení východu se západem.' },
+  comfort:        { name: 'Tvarohový Méďa',          emoji: '🧸', desc: 'Dáváš přednost pohodě a rodinné atmosféře. Tradice a vzpomínky z dětství ti přinášejí radost.' },
+  sophisticated:  { name: 'Pistácie 100%',           emoji: '🌰', desc: 'Máš vytříbený vkus a umíš ocenit kvalitu. Jsi rafinovaný, elegantní a preferuješ to nejlepší.' }
+};
+
+let quizState = { step: 0, tags: {} };
+
+function quizStart(){
+  quizState = { step: 0, tags: {} };
+  showQuizScreen('question');
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+  const q = QUIZ_QUESTIONS[quizState.step];
+  document.getElementById('quiz-step').textContent = 'Otázka ' + (quizState.step + 1) + ' z ' + QUIZ_QUESTIONS.length;
+  document.getElementById('quiz-heading').textContent = q.q;
+  document.getElementById('quiz-progress-bar').style.width = ((quizState.step / QUIZ_QUESTIONS.length) * 100) + '%';
+
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  q.a.forEach((ans, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = ans.text;
+    btn.onclick = () => {
+      ans.tags.forEach(t => { quizState.tags[t] = (quizState.tags[t] || 0) + 1; });
+      quizState.step++;
+      if(quizState.step >= QUIZ_QUESTIONS.length){
+        finishQuiz();
+      } else {
+        renderQuizQuestion();
+      }
+    };
+    opts.appendChild(btn);
+  });
+}
+
+function finishQuiz(){
+  // Najdi tag s nejvíc body
+  let bestTag = 'classic';
+  let bestScore = -1;
+  Object.entries(quizState.tags).forEach(([tag, score]) => {
+    if(score > bestScore){ bestTag = tag; bestScore = score; }
+  });
+  const result = QUIZ_RESULTS[bestTag];
+
+  document.getElementById('quiz-result-emoji').textContent = result.emoji;
+  document.getElementById('quiz-result-name').textContent  = result.name;
+  document.getElementById('quiz-result-desc').textContent  = result.desc;
+  document.getElementById('quiz-progress-bar').style.width = '100%';
+
+  showQuizScreen('result');
+  window.__quizResultName = result.name;
+}
+
+function quizRestart(){
+  showQuizScreen('intro');
+}
+
+function showQuizScreen(name){
+  ['intro','question','result'].forEach(n => {
+    const el = document.getElementById('quiz-' + n);
+    if(el) el.classList.toggle('is-active', n === name);
+  });
+}
+
+async function quizShare(){
+  const name = window.__quizResultName || '?';
+  const text = 'Moje zmrzlina je ' + name + '! Kterou jsi ty? 🍦 Zjisti na u-hrebiku.cz';
+  const url  = window.location.href.split('#')[0] + '#quiz';
+
+  if(navigator.share){
+    try {
+      await navigator.share({ title: 'U Hřebíků — kvíz', text: text, url: url });
+      return;
+    } catch(e){ /* user cancelled */ }
+  }
+  // Fallback — zkopíruj do schránky
+  try {
+    await navigator.clipboard.writeText(text + ' ' + url);
+    alert('Odkaz byl zkopírován do schránky!');
+  } catch(e){
+    prompt('Zkopírujte tento text:', text + ' ' + url);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PŘIVEĎ KAMARÁDA — sdílení / kopírování odkazu
+═══════════════════════════════════════════════════════════════════ */
+async function referShare(){
+  const url  = window.location.href.split('#')[0];
+  const text = 'Mrkni na U Hřebíků — řemeslná zmrzlina v Tečovicích. Přes 85 příchutí! 🍦';
+
+  if(navigator.share){
+    try {
+      await navigator.share({ title: 'U Hřebíků', text: text, url: url });
+      return;
+    } catch(e){ /* user cancelled */ }
+  }
+  // Fallback
+  await referCopy();
+}
+
+async function referCopy(){
+  const url  = window.location.href.split('#')[0];
+  const text = 'Mrkni na U Hřebíků — řemeslná zmrzlina v Tečovicích. Přes 85 příchutí! 🍦 ' + url;
+  const label = document.getElementById('refer-copy-label');
+
+  try {
+    await navigator.clipboard.writeText(text);
+    if(label){
+      const prev = label.textContent;
+      label.textContent = 'Zkopírováno ✓';
+      setTimeout(() => { label.textContent = prev; }, 2000);
+    }
+  } catch(e){
+    prompt('Zkopírujte tento text:', text);
+  }
+}
 
 /* ─────────────────────────────────────────
    BACK TO TOP
