@@ -1188,18 +1188,15 @@
     }
     .combo-indicator.active { opacity: 1; }
 
-    /* ─── HERO TIP ROTATOR (ve stylu "tip" z menu) ─── */
+    /* ─── HERO TIP ROTATOR (jen text, bez kapsle) ─── */
     .hero-tip-rotator {
       display:flex; align-items:center;
       justify-content:center;
       margin: 0 auto 2.4rem;
-      padding:.65rem 1.4rem;
-      border:1px solid var(--border);
-      border-radius:999px;
-      background:rgba(150,150,160,.06);
+      padding:.5rem 0;
       width:fit-content;
-      max-width:min(92vw, 520px);
-      min-height:2.6em;
+      max-width:min(92vw, 540px);
+      min-height:2em;
     }
     .hero-tip-text {
       flex:1;
@@ -1436,49 +1433,6 @@
       .hero-countdown { padding:1rem 1.2rem; }
       .hero-cd-unit { min-width:2.6rem; }
       .hero-cd-num { font-size:1.9rem; }
-    }
-
-    /* ─── INSTAGRAM FEED ─────────────── */
-    .ig-intro {
-      text-align:center; max-width:540px; margin:0 auto 2.4rem;
-      color:var(--muted); font-size:1rem; line-height:1.6;
-    }
-    .ig-grid {
-      display:grid; grid-template-columns:repeat(3, 1fr);
-      gap:1rem; margin-bottom:2rem;
-    }
-    .ig-item {
-      position:relative; aspect-ratio:1/1; overflow:hidden;
-      background:var(--bg3); border-radius:8px;
-      text-decoration:none; color:inherit;
-      transition:transform .3s;
-      display:block;
-    }
-    .ig-item:hover { transform:scale(1.03); }
-    .ig-item img {
-      width:100%; height:100%; object-fit:cover;
-      transition:opacity .3s;
-    }
-    .ig-item-overlay {
-      position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      background:rgba(0,0,0,.55); color:#fff;
-      opacity:0; transition:opacity .3s;
-      text-align:center; padding:1rem;
-      font-size:.85rem; line-height:1.4;
-    }
-    .ig-item:hover .ig-item-overlay { opacity:1; }
-    .ig-item-placeholder {
-      width:100%; height:100%;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:.6rem; color:var(--muted);
-      border:1px dashed var(--border);
-      font-size:.8rem; padding:1rem; text-align:center;
-    }
-    .ig-item-placeholder-icon { font-size:1.8rem; }
-    .ig-cta { text-align:center; }
-    @media(max-width:600px) {
-      .ig-grid { grid-template-columns:repeat(2, 1fr); gap:.7rem; }
     }
 
     /* ─── QUIZ ──────────────────────── */
@@ -1975,36 +1929,6 @@
   </div>
 </section>
 
-<!-- INSTAGRAM FEED -->
-<!--
-  ┌─────────────────────────────────────────────────────────────────────┐
-  │  JAK AKTUALIZOVAT INSTAGRAM FEED                                    │
-  │  Níže v poli IG_POSTS upravte odkazy na své nejnovější příspěvky.  │
-  │  Formát: { url: "https://instagram.com/p/ABC123/",                  │
-  │            img: "https://nahled-fotky.jpg",                         │
-  │            caption: "Krátký popis" }                                │
-  │  Místo nahledu fotky můžete použít i přímý URL obrázku posta.       │
-  │  Pro skutečný fetch z IG API je nutný Facebook Graph API token.     │
-  └─────────────────────────────────────────────────────────────────────┘
--->
-<section id="instagram" class="sec-full sec-bg">
-  <div class="sec-inner">
-    <div class="sec-head reveal">
-      <span class="sec-label">Sledujte nás</span>
-      <h2 class="sec-title">Instagram</h2>
-      <div class="divider"></div>
-    </div>
-    <p class="ig-intro reveal">Podívejte se, co se u nás děje — nové příchutě, akce a každodenní radosti.</p>
-    <div class="ig-grid" id="ig-grid"></div>
-    <div class="ig-cta reveal">
-      <a href="https://www.instagram.com/uhrebiku" target="_blank" rel="noopener" class="btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.45rem;vertical-align:-3px;"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/></svg>
-        @uhrebiku — sledovat na Instagramu
-      </a>
-    </div>
-  </div>
-</section>
-
 <!-- FLAVOR QUIZ -->
 <section id="quiz" class="sec-full">
   <div class="sec-inner">
@@ -2013,7 +1937,7 @@
       <h2 class="sec-title">Která příchuť jsi ty?</h2>
       <div class="divider"></div>
     </div>
-    <p class="quiz-intro reveal">5 rychlých otázek — zjistěte, která z našich řemeslných zmrzlin se k vám nejlíp hodí. A pak se o výsledek podělte!</p>
+    <p class="quiz-intro reveal">4 rychlé otázky — zjistěte, která z našich řemeslných zmrzlin se k vám nejlíp hodí. A pak se o výsledek podělte!</p>
 
     <div class="quiz-wrap reveal stagger-1">
       <!-- Intro -->
@@ -2047,74 +1971,6 @@
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- REFER A FRIEND -->
-<section id="refer" class="sec-full sec-bg">
-  <div class="sec-inner">
-    <div class="refer-card reveal">
-      <div class="refer-visual">🍦👋🍦</div>
-      <h2 class="refer-title">Přiveď kamaráda na kopeček</h2>
-      <p class="refer-sub">Líbí se vám u nás? Pošlete odkaz kamarádovi — oběma zpříjemní den.</p>
-      <div class="refer-actions">
-        <button class="btn-primary" id="refer-share-btn" onclick="referShare()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          <span id="refer-share-label">Sdílet</span>
-        </button>
-        <button class="btn-ghost" id="refer-copy-btn" onclick="referCopy()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <span id="refer-copy-label">Zkopírovat odkaz</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section id="faq" class="sec">
-  <div class="sec-head reveal">
-    <span class="sec-label">Časté dotazy</span>
-    <h2 class="sec-title">FAQ</h2>
-    <div class="divider"></div>
-  </div>
-  <div class="faq-list reveal stagger-1">
-    <details class="faq-item">
-      <summary class="faq-q">Kdy máte otevřeno?</summary>
-      <div class="faq-a">Sezónu otvíráme 30. dubna 2026. Přesný rozvrh najdete v sekci <a href="#hours">Provozní doba</a>. V průběhu sezóny jsme obvykle otevřeno každý den — aktuální stav uvidíte nahoře na stránce.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Můžu u vás zaplatit kartou?</summary>
-      <div class="faq-a">Ano, přijímáme platby kartou (kontaktně i bezkontaktně), Apple Pay a Google Pay. Samozřejmě bereme i hotovost.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Máte bezlaktózovou nebo veganskou zmrzlinu?</summary>
-      <div class="faq-a">Ano! Nabízíme řadu sorbetů (bez mléka), RAW příchutí bez přidaného cukru a speciálních variant pro různá dietní omezení. Stačí se zeptat u pultu — rádi vám poradíme.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Jsou vaše zmrzliny opravdu řemeslné?</summary>
-      <div class="faq-a">Ano. Zmrzliny vyrábíme rodinně z čerstvých surovin — pravé ovoce, ořechy, čokoláda a mléko. Žádné umělé příchutě ani barviva. Více v sekci <a href="#menu">Menu</a>.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Kolik druhů příchutí nabízíte?</summary>
-      <div class="faq-a">Celkem máme přes 85 příchutí, ze kterých v nabídce rotujeme. Aktuálně dostupné příchutě uvidíte nahoře na stránce v pruhu „Dnes máme". Kompletní seznam je v sekci <a href="#menu">Menu → Zmrzlina</a>.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Dá se u vás najíst něco kromě zmrzliny?</summary>
-      <div class="faq-a">Určitě — kromě zmrzliny u nás dostanete čerstvou pizzu, hranolky, kynuté kuličky (sladké i slané), sýrové nuggets a další pochoutky. Z nápojů kávu, limonády, pivo a víno. Celý výběr najdete v <a href="#menu">Menu</a>.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Kde přesně vás najdu?</summary>
-      <div class="faq-a">Náš stánek je přímo v centru Tečovic u Zlína. Přesnou polohu a navigaci najdete v sekci <a href="#map-section">Kde jsme</a>.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Jak můžu hlasovat pro svou oblíbenou příchuť?</summary>
-      <div class="faq-a">V sekci <a href="#menu">Menu → Zmrzlina</a> klikněte na srdíčko ♥ u příchutí, které máte nejraději. Můžete vybrat až 3 své favority a výsledky se sčítají napříč všemi návštěvníky — aktuální TOP 10 najdete v sekci <a href="#poll">Anketa</a>.</div>
-    </details>
-    <details class="faq-item">
-      <summary class="faq-q">Můžu u vás zaplatit Multisport / jinou kartou benefitů?</summary>
-      <div class="faq-a">Aktuálně nejsme zapojeni v programu Multisport. Pokud máte zájem nebo jste narazili na jinou konkrétní potřebu, napište nám zprávu na Facebook nebo Instagram.</div>
-    </details>
   </div>
 </section>
 
@@ -2249,11 +2105,11 @@
       </div>
     </div>
     <div class="reviews-header-cta">
-      <a href="https://search.google.com/local/writereview?placeid=ChIJFcJ1LFwME0cRxalCFY0oH2c" target="_blank" rel="noopener" class="btn-primary">
+      <a href="https://search.google.com/local/writereview?placeid=ChIJFcJ1LFwME0cRxalCFY0oH2c" rel="noopener noreferrer" class="btn-primary">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="margin-right:.45rem;vertical-align:-2px;"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 19.445l-7.416 3.968 1.48-8.279L0 9.306l8.332-1.151z"/></svg>
         Napsat recenzi
       </a>
-      <a href="https://search.google.com/local/reviews?placeid=ChIJFcJ1LFwME0cRxalCFY0oH2c" target="_blank" rel="noopener" class="btn-ghost">
+      <a href="https://search.google.com/local/reviews?placeid=ChIJFcJ1LFwME0cRxalCFY0oH2c" rel="noopener noreferrer" class="btn-ghost">
         Všechny recenze
       </a>
     </div>
@@ -2275,6 +2131,70 @@
       <p class="review-text">„Skvělý stánek, obsluha na jedničku 👍"</p>
       <div class="review-author">— Adéla Kovářová</div>
     </div>
+  </div>
+</section>
+
+<!-- REFER A FRIEND -->
+<section id="refer" class="sec-full sec-bg">
+  <div class="sec-inner">
+    <div class="refer-card reveal">
+      <div class="refer-visual">🍦👋🍦</div>
+      <h2 class="refer-title">Přiveď kamaráda na kopeček</h2>
+      <p class="refer-sub">Líbí se vám u nás? Pošlete odkaz kamarádovi — oběma zpříjemní den.</p>
+      <div class="refer-actions">
+        <button class="btn-primary" id="refer-share-btn" onclick="referShare()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span id="refer-share-label">Sdílet</span>
+        </button>
+        <button class="btn-ghost" id="refer-copy-btn" onclick="referCopy()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-2px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="refer-copy-label">Zkopírovat odkaz</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="sec">
+  <div class="sec-head reveal">
+    <span class="sec-label">Časté dotazy</span>
+    <h2 class="sec-title">FAQ</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="faq-list reveal stagger-1">
+    <details class="faq-item">
+      <summary class="faq-q">Kdy máte otevřeno?</summary>
+      <div class="faq-a">Sezónu otvíráme 30. dubna 2026. Přesný rozvrh najdete v sekci <a href="#hours">Provozní doba</a>. V průběhu sezóny jsme obvykle otevřeno každý den — aktuální stav uvidíte nahoře na stránce.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Můžu u vás zaplatit kartou?</summary>
+      <div class="faq-a">Ano, přijímáme platby kartou (kontaktně i bezkontaktně), Apple Pay a Google Pay. Samozřejmě bereme i hotovost.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Máte bezlaktózovou nebo veganskou zmrzlinu?</summary>
+      <div class="faq-a">Ano! Nabízíme řadu sorbetů (bez mléka), RAW příchutí bez přidaného cukru a speciálních variant pro různá dietní omezení. Stačí se zeptat u pultu — rádi vám poradíme.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Jsou vaše zmrzliny opravdu řemeslné?</summary>
+      <div class="faq-a">Ano. Zmrzliny vyrábíme rodinně z čerstvých surovin — pravé ovoce, ořechy, čokoláda a mléko. Žádné umělé příchutě ani barviva. Více v sekci <a href="#menu">Menu</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Kolik druhů příchutí nabízíte?</summary>
+      <div class="faq-a">Celkem máme přes 85 příchutí, ze kterých v nabídce rotujeme. Aktuálně dostupné příchutě uvidíte nahoře na stránce v pruhu „Dnes máme". Kompletní seznam je v sekci <a href="#menu">Menu → Zmrzlina</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Dá se u vás najíst něco kromě zmrzliny?</summary>
+      <div class="faq-a">Určitě — kromě zmrzliny u nás dostanete čerstvou pizzu, hranolky, kynuté kuličky (sladké i slané), sýrové nuggets a další pochoutky. Z nápojů kávu, limonády, pivo a víno. Celý výběr najdete v <a href="#menu">Menu</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Kde přesně vás najdu?</summary>
+      <div class="faq-a">Náš stánek je přímo v centru Tečovic u Zlína. Přesnou polohu a navigaci najdete v sekci <a href="#map-section">Kde jsme</a>.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-q">Jak můžu hlasovat pro svou oblíbenou příchuť?</summary>
+      <div class="faq-a">V sekci <a href="#menu">Menu → Zmrzlina</a> klikněte na srdíčko ♥ u příchutí, které máte nejraději. Můžete vybrat až 3 své favority a výsledky se sčítají napříč všemi návštěvníky — aktuální TOP 10 najdete v sekci <a href="#poll">Anketa</a>.</div>
+    </details>
   </div>
 </section>
 
@@ -3856,119 +3776,166 @@ function getCurrentStatus(now){
 })();
 
 /* ═══════════════════════════════════════════════════════════════════
-   INSTAGRAM FEED — ruční seznam příspěvků
-   ─────────────────────────────────────────────────────────────────
-   Aktualizujte pole IG_POSTS níže. Každý objekt má:
-     url     — odkaz na Instagram příspěvek
-     img     — URL obrázku (náhled)
-     caption — krátký popis (zobrazí se při hoveru)
-
-   Pokud nemáte obrázek, nechte pole prázdné a zobrazí se placeholder.
-═══════════════════════════════════════════════════════════════════ */
-const IG_POSTS = [
-  // Příklad — nahraďte vlastními příspěvky:
-  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Nové příchutě tento týden 🍦' },
-  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Dubajská — novinka v nabídce' },
-  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Ráno ve stánku' },
-  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Víkendové radosti' },
-  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Káva i zmrzka' },
-  { url: 'https://www.instagram.com/uhrebiku/', img: '', caption: 'Naši zákazníci' }
-];
-
-(function initInstagramFeed(){
-  const grid = document.getElementById('ig-grid');
-  if(!grid) return;
-
-  grid.innerHTML = '';
-  IG_POSTS.forEach((post, i) => {
-    const a = document.createElement('a');
-    a.className = 'ig-item';
-    a.href = post.url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.setAttribute('aria-label', post.caption || ('Instagram příspěvek ' + (i+1)));
-
-    if(post.img){
-      a.innerHTML =
-        '<img src="' + post.img + '" alt="' + (post.caption || '') + '" loading="lazy">' +
-        '<div class="ig-item-overlay">' + (post.caption || 'Otevřít na Instagramu') + '</div>';
-    } else {
-      a.innerHTML =
-        '<div class="ig-item-placeholder">' +
-          '<div class="ig-item-placeholder-icon">📷</div>' +
-          '<div>' + (post.caption || 'Instagram') + '</div>' +
-        '</div>';
-    }
-    grid.appendChild(a);
-  });
-})();
-
-/* ═══════════════════════════════════════════════════════════════════
    FLAVOR QUIZ — "Která příchuť jsi ty?"
-   5 otázek → výsledek s popisem → sdílení
+   ─────────────────────────────────────────────────────────────────
+   Jak to funguje:
+   • Každá ze 87 příchutí má sadu tagů (ovocná, čokoládová, raw, sladká…)
+   • 4 otázky, každá odpověď udává BODY pro konkrétní tagy
+   • Na konci se pro každou příchuť spočítá skóre = součet bodů
+     za její tagy. Vítězí příchuť s nejvyšším skóre.
+   • Při remíze vybere algoritmus náhodně z nejvyšších.
 ═══════════════════════════════════════════════════════════════════ */
+
+/* ----- TAG PROFIL KAŽDÉ PŘÍCHUTI ----- */
+const FLAVOR_TAGS = {
+  // ── KLASIKY ─────────────────────────
+  'Vanilka':              ['classic','creamy','mild','universal'],
+  'Vanilka Madagaskar':   ['classic','creamy','refined','premium'],
+  'Vanilka Nutella':      ['classic','chocolate','sweet','indulgent'],
+  'Vanilka Retro':        ['classic','creamy','nostalgic','mild'],
+  'Čokoláda':             ['classic','chocolate','sweet','universal'],
+  'Čokoláda 72%':         ['chocolate','intense','refined','premium'],
+  'Čokoládový sorbet':    ['chocolate','sorbet','light','vegan'],
+  'Stracciatella':        ['classic','chocolate','creamy','italian'],
+  'Cookies':              ['chocolate','playful','childhood','indulgent'],
+  'Punč s rozinkami':     ['sweet','nostalgic','spice','czech','indulgent'],
+
+  // ── OVOCNÉ SVĚŽÍ ────────────────────
+  'Malina':               ['fruit','berry','sweet','classic'],
+  'Malina RAW':           ['fruit','berry','raw','natural','healthy'],
+  'Malina RAW Sorbet':    ['fruit','berry','raw','sorbet','vegan'],
+  'Malinový kefír':       ['fruit','berry','yogurt','tart','healthy'],
+  'Malina s čokoládou':   ['fruit','berry','chocolate','indulgent'],
+  'Borůvka':              ['fruit','berry','sweet','classic'],
+  'Borůvka RAW':          ['fruit','berry','raw','natural','healthy'],
+  'Borůvka RAW s Levandulí': ['fruit','berry','herbal','raw','unique'],
+  'Jahoda RAW':           ['fruit','berry','raw','natural','healthy'],
+  'Jahoda RAW Sorbet':    ['fruit','berry','raw','sorbet','vegan'],
+  'Jahoda RAW s liči':    ['fruit','exotic','raw','unique'],
+  'Jahodový milkshake':   ['fruit','creamy','playful','sweet'],
+  'Lesní plody':          ['fruit','berry','classic','natural'],
+  'Cheesecake s jahodami': ['fruit','creamy','dessert','indulgent'],
+  'Višňové brownie':      ['fruit','chocolate','dessert','indulgent'],
+  'Višeň RAW Sorbet':     ['fruit','raw','sorbet','vegan','tart'],
+  'Černý rybíz RAW':      ['fruit','berry','raw','tart','natural'],
+  'Meruňka':              ['fruit','sweet','classic','natural'],
+  'Moravský meruňkový koláč': ['fruit','czech','dessert','nostalgic'],
+  'Pomeranč':             ['fruit','citrus','classic','universal'],
+  'Citrón':               ['fruit','citrus','tart','refreshing'],
+  'Citron cheesecake':    ['fruit','citrus','creamy','dessert'],
+  'Rakytník':             ['fruit','tart','healthy','unique'],
+  'Bezinka':              ['fruit','herbal','unique','natural'],
+  'Jablko':               ['fruit','classic','czech','mild'],
+  'Přesnídávka':          ['fruit','czech','nostalgic','mild'],
+  'Granátové jablko':     ['fruit','exotic','tart','trendy'],
+  'Mango':                ['fruit','exotic','sweet','tropical'],
+  'Mango Sorbet':         ['fruit','exotic','sorbet','tropical','vegan'],
+  'Ananas Sorbet':        ['fruit','tropical','sorbet','vegan'],
+  'Broskev Sorbet':       ['fruit','sweet','sorbet','vegan'],
+  'Fíkový sorbet':        ['fruit','exotic','sorbet','vegan','refined'],
+  'Maracuja RAW Sorbet':  ['fruit','exotic','raw','sorbet','tropical'],
+  'Dračí ovoce':          ['fruit','exotic','trendy','tropical'],
+  'Dračí ovoce RAW Sorbet': ['fruit','exotic','raw','sorbet','trendy'],
+  'Meloun':               ['fruit','refreshing','classic','sweet'],
+
+  // ── ŘEMESLNÉ MLÉČNÉ ─────────────────
+  'Jogurt Prolévaný Ovocem': ['yogurt','fruit','healthy','creamy'],
+  'Čerstvý Jogurt bez cukru': ['yogurt','healthy','mild','natural'],
+  'Cheesecake':           ['creamy','dessert','sweet','indulgent'],
+  'Tvarohový Méďa':       ['creamy','czech','nostalgic','sweet'],
+  'Dolce Latte':          ['creamy','coffee','italian','sweet'],
+  'Káva':                 ['coffee','intense','adult','classic'],
+  'Tiramisu':             ['coffee','dessert','italian','refined'],
+  'Pinguino':             ['chocolate','playful','childhood','indulgent'],
+
+  // ── OŘECHOVÉ ────────────────────────
+  'Pistáciová':           ['nut','classic','refined','premium'],
+  'Pistácie pesto':       ['nut','trendy','unique','refined'],
+  'Pistácie 100%':        ['nut','intense','premium','refined'],
+  'Vlašský ořech':        ['nut','classic','czech','nostalgic'],
+  'Lískový ořech':        ['nut','classic','sweet','mild'],
+  'Kokos & Mandle':       ['nut','tropical','exotic','sweet'],
+  'Čtyři druhy ořechů':   ['nut','intense','premium','refined'],
+  'Arašídový karamel':    ['nut','caramel','sweet','indulgent'],
+  'Nugát':                ['nut','sweet','indulgent','czech'],
+  'Nugátový Croissant':   ['nut','dessert','french','indulgent'],
+
+  // ── KARAMELOVÉ / SLADKO-SLANÉ ──────
+  'Slaný karamel':        ['caramel','salty-sweet','trendy','indulgent'],
+  'Slaný karamel s himalájskou solí': ['caramel','salty-sweet','trendy','premium'],
+  'Pekanový Karamel':     ['caramel','nut','trendy','indulgent'],
+  'Karamelová tyčinka':   ['caramel','childhood','sweet','playful'],
+  'Popcorn v karamelu':   ['caramel','playful','unique','childhood'],
+  'Matcha a Karamel':     ['caramel','exotic','trendy','unique'],
+
+  // ── TRENDY / EXOTICKÉ ───────────────
+  'Dubajská':             ['trendy','exotic','premium','unique','indulgent'],
+  'Aloe Vera':            ['herbal','unique','healthy','natural'],
+  'Levandule':            ['herbal','unique','refined','natural'],
+
+  // ── ČESKÉ / TRADIČNÍ ────────────────
+  'Maková':               ['czech','nostalgic','classic','mild'],
+  'Medový Perníček':      ['czech','spice','nostalgic','sweet'],
+  'Perník s povidly':     ['czech','spice','nostalgic','fruit'],
+  'Krupicová kaše':       ['czech','nostalgic','mild','comfort'],
+  'Dýně s kardamonem':    ['spice','unique','trendy','natural'],
+  'Banán s čokoládou':    ['fruit','chocolate','childhood','sweet'],
+  'Frgál':                ['czech','dessert','nostalgic','sweet'],
+  'Sachr':                ['chocolate','dessert','refined','indulgent'],
+  'Větrník':              ['czech','dessert','nostalgic','sweet'],
+  'Špička':               ['czech','dessert','nostalgic','sweet'],
+
+  // ── PRO DĚTI / HRAVÉ ────────────────
+  'Šmoula':               ['playful','childhood','sweet','unique'],
+  'Šreck':                ['playful','childhood','sweet','unique'],
+  'Unicorn':              ['playful','childhood','sweet','trendy'],
+  'Buble Gum':            ['playful','childhood','sweet','unique'],
+  'Praskací lízátko':     ['playful','childhood','unique','sweet']
+};
+
 const QUIZ_QUESTIONS = [
   {
-    q: 'Jaká je tvoje ideální neděle?',
+    q: 'Když si máš vybrat zmrzlinu, co ti nejdřív padne na chuť?',
     a: [
-      { text: 'Dlouhá procházka v přírodě',    tags: ['classic', 'fresh'] },
-      { text: 'Sedět v kavárně s dobrou knihou', tags: ['rich', 'sophisticated'] },
-      { text: 'Dobrodružství a nové zážitky',    tags: ['bold', 'exotic'] },
-      { text: 'Relaxace doma s rodinou',         tags: ['comfort', 'fresh'] }
+      { text: '🍓 Něco ovocného a svěžího',                 scores: { fruit:5, berry:3, sorbet:3, citrus:2, tropical:2, refreshing:3 } },
+      { text: '🍫 Čokoláda, karamel nebo ořechy',           scores: { chocolate:5, caramel:4, nut:4, indulgent:3, sweet:2 } },
+      { text: '🥛 Krémové jako pudink nebo cheesecake',     scores: { creamy:5, classic:3, yogurt:3, dessert:3, mild:2 } },
+      { text: '✨ Něco neobvyklého, co jsem ještě nezkusil',  scores: { trendy:5, exotic:5, unique:4, premium:3 } }
     ]
   },
   {
-    q: 'Čemu dáváš přednost?',
+    q: 'Jaká nálada tě teď charakterizuje?',
     a: [
-      { text: 'Sladké a krémové',     tags: ['rich', 'comfort'] },
-      { text: 'Svěží a ovocné',       tags: ['fresh', 'classic'] },
-      { text: 'Intenzivní a výrazné', tags: ['bold', 'sophisticated'] },
-      { text: 'Exotické a neznámé',   tags: ['exotic', 'bold'] }
+      { text: '😊 Hravá a rozpustilá',                       scores: { playful:5, childhood:4, sweet:3, unique:2 } },
+      { text: '🧘 Klidná a pohodová',                        scores: { classic:4, mild:4, nostalgic:3, comfort:3, natural:2 } },
+      { text: '🔥 Plná energie a touhy po zážitcích',        scores: { bold:4, trendy:4, intense:3, exotic:3, refreshing:2 } },
+      { text: '💎 Hledám něco kvalitního a vyváženého',      scores: { refined:5, premium:4, classic:3, italian:2, french:2 } }
     ]
   },
   {
-    q: 'Jaký film si rád vybereš?',
+    q: 'Co ti nejvíc chutná, když ochutnáváš nové věci?',
     a: [
-      { text: 'Nadčasovou klasiku', tags: ['classic', 'sophisticated'] },
-      { text: 'Rodinnou komedii',   tags: ['comfort'] },
-      { text: 'Akční thriller',     tags: ['bold'] },
-      { text: 'Dokument o cestách', tags: ['exotic', 'fresh'] }
+      { text: '🍯 Sladké až hodně sladké',                   scores: { sweet:5, indulgent:4, caramel:3, chocolate:3 } },
+      { text: '🍋 Trochu kyselé nebo svěží',                 scores: { tart:5, citrus:4, refreshing:4, sorbet:3, berry:2 } },
+      { text: '🌿 Jemné chutě, skoro bez cukru',             scores: { natural:5, healthy:4, raw:4, herbal:3, yogurt:3, mild:2 } },
+      { text: '🌶 Kořeněné nebo výrazné',                    scores: { spice:5, intense:4, bold:3, exotic:3, coffee:2 } }
     ]
   },
   {
-    q: 'Co by nesmělo chybět u piknik košíku?',
+    q: 'Čím se cítíš nejvíc doma?',
     a: [
-      { text: 'Čerstvé ovoce',         tags: ['fresh'] },
-      { text: 'Kvalitní čokoláda',     tags: ['rich', 'sophisticated'] },
-      { text: 'Domácí buchty od babičky', tags: ['comfort', 'classic'] },
-      { text: 'Něco neočekávaného',    tags: ['exotic', 'bold'] }
-    ]
-  },
-  {
-    q: 'Jaká barva tě láká?',
-    a: [
-      { text: 'Tlumené pastelové',  tags: ['classic', 'comfort'] },
-      { text: 'Výrazná a teplá',    tags: ['rich', 'bold'] },
-      { text: 'Svěží a světlá',     tags: ['fresh'] },
-      { text: 'Temná a tajemná',    tags: ['sophisticated', 'exotic'] }
+      { text: '👵 Domácími recepty od babičky',              scores: { czech:5, nostalgic:4, comfort:3, classic:3, mild:2 } },
+      { text: '🌏 Exotikou a chutěmi z cest',                scores: { exotic:5, tropical:4, trendy:3, unique:3, premium:2 } },
+      { text: '🎨 Něčím hravým nebo nečekaným',              scores: { playful:5, unique:4, trendy:3, childhood:3 } },
+      { text: '🥗 Zdravými a přírodními chutěmi',            scores: { natural:5, healthy:5, raw:4, vegan:3, yogurt:3 } }
     ]
   }
 ];
 
-const QUIZ_RESULTS = {
-  classic:        { name: 'Vanilka',                 emoji: '🍦', desc: 'Jsi nadčasový, spolehlivý a milovaný všemi. Klasická volba, která nikdy nezklame — prostě dokonalá rovnováha.' },
-  fresh:          { name: 'Malina RAW',              emoji: '🫐', desc: 'Jsi osvěžující, lehký a plný života. Ovocné příchutě ti sedí nejvíc — svěžest je tvoje silná stránka.' },
-  rich:           { name: 'Slaný karamel',           emoji: '🍯', desc: 'Máš rád věci s hloubkou a charakterem. Sladko-slaná kombinace je přesně o tobě — plná překvapení.' },
-  bold:           { name: 'Dubajská',                emoji: '✨', desc: 'Jsi odvážný, výrazný a trendy. Miluješ nové zážitky a nebojíš se experimentovat — přesně jako naše nejnovější hvězda.' },
-  exotic:         { name: 'Matcha a Karamel',        emoji: '🍵', desc: 'Máš rád neobvyklé kombinace a exotiku. Nejsi tuctový — a to se ti líbí. Spojení východu se západem.' },
-  comfort:        { name: 'Tvarohový Méďa',          emoji: '🧸', desc: 'Dáváš přednost pohodě a rodinné atmosféře. Tradice a vzpomínky z dětství ti přinášejí radost.' },
-  sophisticated:  { name: 'Pistácie 100%',           emoji: '🌰', desc: 'Máš vytříbený vkus a umíš ocenit kvalitu. Jsi rafinovaný, elegantní a preferuješ to nejlepší.' }
-};
-
-let quizState = { step: 0, tags: {} };
+let quizState = { step: 0, scores: {} };
 
 function quizStart(){
-  quizState = { step: 0, tags: {} };
+  quizState = { step: 0, scores: {} };
   showQuizScreen('question');
   renderQuizQuestion();
 }
@@ -3981,12 +3948,15 @@ function renderQuizQuestion(){
 
   const opts = document.getElementById('quiz-options');
   opts.innerHTML = '';
-  q.a.forEach((ans, idx) => {
+  q.a.forEach((ans) => {
     const btn = document.createElement('button');
     btn.className = 'quiz-option';
     btn.textContent = ans.text;
     btn.onclick = () => {
-      ans.tags.forEach(t => { quizState.tags[t] = (quizState.tags[t] || 0) + 1; });
+      // Přičti body ke každému tagu
+      Object.entries(ans.scores).forEach(([tag, pts]) => {
+        quizState.scores[tag] = (quizState.scores[tag] || 0) + pts;
+      });
       quizState.step++;
       if(quizState.step >= QUIZ_QUESTIONS.length){
         finishQuiz();
@@ -3999,21 +3969,79 @@ function renderQuizQuestion(){
 }
 
 function finishQuiz(){
-  // Najdi tag s nejvíc body
-  let bestTag = 'classic';
-  let bestScore = -1;
-  Object.entries(quizState.tags).forEach(([tag, score]) => {
-    if(score > bestScore){ bestTag = tag; bestScore = score; }
+  // Pro každou příchuť spočítej skóre = součet bodů za její tagy
+  const scored = [];
+  Object.entries(FLAVOR_TAGS).forEach(([name, tags]) => {
+    let total = 0;
+    tags.forEach(t => { total += (quizState.scores[t] || 0); });
+    scored.push({ name: name, score: total });
   });
-  const result = QUIZ_RESULTS[bestTag];
 
-  document.getElementById('quiz-result-emoji').textContent = result.emoji;
-  document.getElementById('quiz-result-name').textContent  = result.name;
-  document.getElementById('quiz-result-desc').textContent  = result.desc;
+  // Seřaď sestupně
+  scored.sort((a, b) => b.score - a.score);
+
+  // Rozšířený top výběr — bereme top 15 příchutí s vysokým skóre
+  // a vážená náhoda (vyšší skóre = vyšší pravděpodobnost).
+  // Díky tomu pokrýváme víc z 88 příchutí, ale vítěz pořád dává smysl.
+  const topN = scored.slice(0, 15);
+  const weights = topN.map(s => Math.max(1, s.score));
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let rand = Math.random() * totalWeight;
+  let winner = topN[0];
+  for(let i = 0; i < topN.length; i++){
+    rand -= weights[i];
+    if(rand <= 0){ winner = topN[i]; break; }
+  }
+
+  document.getElementById('quiz-result-emoji').textContent = flavorEmoji(winner.name);
+  document.getElementById('quiz-result-name').textContent  = winner.name;
+  document.getElementById('quiz-result-desc').textContent  = flavorDescription(winner.name);
   document.getElementById('quiz-progress-bar').style.width = '100%';
 
   showQuizScreen('result');
-  window.__quizResultName = result.name;
+  window.__quizResultName = winner.name;
+}
+
+/* Vybere vhodné emoji pro příchuť podle tagů */
+function flavorEmoji(name){
+  const tags = FLAVOR_TAGS[name] || [];
+  if(tags.includes('chocolate')) return '🍫';
+  if(tags.includes('berry'))     return '🫐';
+  if(tags.includes('citrus'))    return '🍋';
+  if(tags.includes('tropical'))  return '🥭';
+  if(tags.includes('fruit'))     return '🍓';
+  if(tags.includes('nut'))       return '🌰';
+  if(tags.includes('caramel'))   return '🍯';
+  if(tags.includes('coffee'))    return '☕';
+  if(tags.includes('playful'))   return '🎨';
+  if(tags.includes('herbal'))    return '🌿';
+  if(tags.includes('spice'))     return '🌶️';
+  if(tags.includes('czech'))     return '🇨🇿';
+  if(tags.includes('yogurt'))    return '🥛';
+  if(tags.includes('sorbet'))    return '❄️';
+  if(tags.includes('trendy'))    return '✨';
+  return '🍦';
+}
+
+/* Generický popis podle tagů + jména */
+function flavorDescription(name){
+  const tags = FLAVOR_TAGS[name] || [];
+  const traits = [];
+
+  if(tags.includes('trendy') || tags.includes('unique')) traits.push('máš rád/a novinky a trendy');
+  if(tags.includes('classic') || tags.includes('nostalgic')) traits.push('ceníš si tradice a nadčasovost');
+  if(tags.includes('exotic') || tags.includes('tropical')) traits.push('láká tě objevovat nové chutě');
+  if(tags.includes('raw') || tags.includes('healthy') || tags.includes('natural')) traits.push('vybíráš si přírodní a poctivé');
+  if(tags.includes('playful') || tags.includes('childhood')) traits.push('v srdci jsi pořád trochu dítě');
+  if(tags.includes('refined') || tags.includes('premium')) traits.push('máš vytříbený vkus');
+  if(tags.includes('czech')) traits.push('máš rád/a domácí, české chutě');
+  if(tags.includes('indulgent') || tags.includes('sweet')) traits.push('dopřeješ si — a je to fajn');
+  if(tags.includes('intense') || tags.includes('bold')) traits.push('nebojíš se výrazných chutí');
+
+  const intro = traits.length > 0
+    ? 'Podle odpovědí ' + traits.slice(0, 2).join(' a ') + '. '
+    : '';
+  return intro + 'Vyzkoušej naši příchuť „' + name + '" — sedne ti. 🍦';
 }
 
 function quizRestart(){
