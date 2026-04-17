@@ -1155,26 +1155,46 @@
     }
     .combo-indicator.active { opacity: 1; }
 
-    /* ─── ROTATING HERO TEXT ─────────── */
-    .hero-rotating {
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
-      font-size: 1.1rem; letter-spacing: .35em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 2.4rem; height: 1.4em;
-      overflow: hidden; position: relative;
+    /* ─── HERO TIP ROTATOR (ve stylu "tip" z menu) ─── */
+    .hero-tip-rotator {
+      display:flex; align-items:center;
+      justify-content:center;
+      margin: 0 auto 2.4rem;
+      padding:.65rem 1.4rem;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(150,150,160,.06);
+      width:fit-content;
+      max-width:min(92vw, 520px);
+      min-height:2.6em;
     }
-    .hero-rotating-inner {
-      display: flex; flex-direction: column;
-      animation: rotateText 9s ease-in-out infinite;
+    .hero-tip-text {
+      flex:1;
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600;
+      font-size:.92rem;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--text);
+      opacity:1;
+      transform:translateY(0);
+      transition:opacity .5s ease, transform .5s ease;
+      text-align:center;
+      line-height:1.35;
     }
-    .hero-rotating-inner span {
-      display: block; height: 1.4em; line-height: 1.4em; text-align: center;
+    .hero-tip-text.is-swapping {
+      opacity:0;
+      transform:translateY(-6px);
     }
-    @keyframes rotateText {
-      0%,18%   { transform: translateY(0); }
-      22%,38%  { transform: translateY(-1.4em); }
-      42%,58%  { transform: translateY(-2.8em); }
-      62%,78%  { transform: translateY(-4.2em); }
-      82%,100% { transform: translateY(0); }
+
+    @media(max-width:600px){
+      .hero-tip-rotator {
+        padding:.55rem 1.1rem;
+      }
+      .hero-tip-text {
+        font-size:.78rem;
+        letter-spacing:.16em;
+      }
     }
 
     /* ─── ANIMATED STATS ────────────── */
@@ -1352,15 +1372,11 @@
 
     <p class="hero-sub reveal stagger-1">Tečovice</p>
     <h1 class="reveal stagger-2">U Hřebíků</h1>
-    <div class="hero-rotating reveal stagger-3">
-      <div class="hero-rotating-inner">
-        <span>Zmrzlina · Stánek</span>
-        <span>🍦 Vanilka · Malina · Dubajská</span>
-        <span>☕ Káva · Pizza · Hranolky</span>
-        <span>😊 S úsměvem každý den</span>
-        <span>Zmrzlina · Stánek</span>
-      </div>
+
+    <div class="hero-tip-rotator reveal stagger-3" id="hero-tip-rotator" aria-live="polite">
+      <span class="hero-tip-text" id="hero-tip-text">Ochutnejte naši řemeslnou zmrzlinu</span>
     </div>
+
     <a href="#menu" class="btn-outline reveal stagger-4">Prohlédnout menu</a>
   </div>
   <div class="scroll-hint">
@@ -1762,7 +1778,9 @@ const MENU = {
     'Pivo': [
       'Pilsner Urquell 0,33l sklo',
       'Birell nealko 0,5l plech',
-      { name: '11° Alojz, 12° Vincet, 11° Švihák APA', tip: true },
+      { name: '11° Alojz', tip: true },
+      { name: '12° Vincet', tip: true },
+      { name: '11° Švihák APA', tip: true },
       'Pivovar Luhačovice 1,0l PET'
     ]
   },
@@ -3095,6 +3113,33 @@ function closeBanner(){
   const sp = document.getElementById('scroll-progress');
   if(sp) sp.style.top = '0';
 }
+
+/* ─────────────────────────────────────────
+   HERO TIP ROTATOR
+   Střídá různé "tipy" pod nadpisem U Hřebíků
+───────────────────────────────────────── */
+(function initHeroTips(){
+  const el = document.getElementById('hero-tip-text');
+  if(!el) return;
+
+  const TIPS = [
+    'Ochutnejte naši řemeslnou zmrzlinu',
+    'Káva · Pizza · Hranolky',
+    'Přes 85 příchutí zmrzliny',
+    'Otevřeno každý den',
+    'Tečovice u Zlína'
+  ];
+
+  let i = 0;
+  setInterval(() => {
+    el.classList.add('is-swapping');
+    setTimeout(() => {
+      i = (i + 1) % TIPS.length;
+      el.textContent = TIPS[i];
+      el.classList.remove('is-swapping');
+    }, 500); // match CSS transition duration
+  }, 3800);
+})();
 
 /* ─────────────────────────────────────────
    BACK TO TOP
