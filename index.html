@@ -1485,6 +1485,66 @@
       letter-spacing:.05em;
     }
 
+    /* Mimořádné uzavření kvůli počasí */
+    .hero-weather[hidden] { display:none !important; }
+    .hero-weather {
+      display:flex; align-items:center; gap:1.2rem;
+      padding:1.2rem 1.6rem;
+      background:linear-gradient(135deg, rgba(212,165,116,.12), rgba(232,107,107,.08));
+      border:1.5px solid rgba(212,165,116,.45);
+      border-radius:16px;
+      max-width:520px;
+      animation:weatherPulse 3s ease-in-out infinite;
+    }
+    @keyframes weatherPulse {
+      0%, 100% { border-color:rgba(212,165,116,.45); }
+      50%      { border-color:rgba(212,165,116,.85); }
+    }
+    .hero-weather-emoji {
+      font-size:2.6rem; line-height:1;
+      flex-shrink:0;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));
+      animation:weatherFloat 4s ease-in-out infinite;
+    }
+    @keyframes weatherFloat {
+      0%, 100% { transform:translateY(0); }
+      50%      { transform:translateY(-4px); }
+    }
+    .hero-weather-text {
+      text-align:left;
+      display:flex; flex-direction:column; gap:.25rem;
+    }
+    .hero-weather-title {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700; font-size:1.15rem;
+      letter-spacing:.18em; text-transform:uppercase;
+      color:#d4a574;
+    }
+    .hero-weather-sub {
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic; font-size:1rem;
+      color:var(--text); opacity:.85;
+      line-height:1.4;
+    }
+    @media(max-width:520px) {
+      .hero-weather { padding:1rem 1.2rem; gap:.9rem; }
+      .hero-weather-emoji { font-size:2.1rem; }
+      .hero-weather-title { font-size:1rem; }
+      .hero-weather-sub { font-size:.92rem; }
+    }
+
+    /* Nav status — varianta pro weather */
+    .nav-status.is-weather .nav-status-dot {
+      background:#d4a574;
+      box-shadow:0 0 8px rgba(212,165,116,.7);
+      animation:navWeatherPulse 2s ease-in-out infinite;
+    }
+    @keyframes navWeatherPulse {
+      0%, 100% { box-shadow:0 0 4px rgba(212,165,116,.5); }
+      50%      { box-shadow:0 0 10px rgba(212,165,116,.9); }
+    }
+    .nav-status.is-weather .nav-status-text { color:#d4a574; }
+
     /* Nav status indikátor */
     .nav-status {
       display:inline-flex; align-items:center; gap:.45rem;
@@ -1979,6 +2039,14 @@
         <span class="hero-livestatus-dot" id="hero-livestatus-dot"></span>
         <span class="hero-livestatus-text" id="hero-livestatus-text">Otevřeno</span>
         <span class="hero-livestatus-sub" id="hero-livestatus-sub">Zavíráme v 20:00</span>
+      </div>
+      <!-- Mimořádné uzavření kvůli počasí -->
+      <div class="hero-weather" id="hero-weather" hidden>
+        <div class="hero-weather-emoji" id="hero-weather-emoji">🌧</div>
+        <div class="hero-weather-text">
+          <div class="hero-weather-title" id="hero-weather-title">Dnes zavřeno</div>
+          <div class="hero-weather-sub" id="hero-weather-sub">Kvůli dešti se zítra těšíme zase nashledanou</div>
+        </div>
       </div>
     </div>
 
@@ -3873,7 +3941,7 @@ document.querySelectorAll('.reveal, .reveal-left').forEach(el => {
 ═════════════════════════════════════════════════════════════════ */
 const DAILY_FLAVORS = [
   'Matcha a Karamel', 'Pekanový Karamel', 'Malina', 'Dubajská',
-  'Pistáciová', 'Jahodový Milkshake', 'Kokos a Mandle', 'Slaný Karamel'
+  'Pistáciová', 'Jahoda', 'Čokoláda', 'Slaný karamel'
 ];
 
 (function initBanner(){
@@ -3934,6 +4002,40 @@ function closeBanner(){
    • Po 30.4.2026    →  živý stav Otevřeno/Zavřeno podle času
    • Provozní hodiny lze upravit v OPEN_HOURS níže
 ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   PROVOZNÍ STAV — Otevřeno / Zavřeno + výjimky kvůli počasí
+   ─────────────────────────────────────────────────────────────────
+   Provozní hodiny lze upravit v OPEN_HOURS níže.
+═══════════════════════════════════════════════════════════════════ */
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  VÝJIMEČNÉ UZAVŘENÍ KVŮLI POČASÍ                                 │
+// │  ─────────────────────────────────                              │
+// │  Když je špatné počasí, sem vlož typ uzavření.                  │
+// │  Hodnoty:                                                        │
+// │     null      → běžný provoz dle hodin (žádná výjimka)          │
+// │     'rain'    → 🌧  "Dnes zavřeno kvůli dešti"                  │
+// │     'storm'   → ⛈  "Dnes zavřeno kvůli bouřce"                 │
+// │     'cold'    → ❄  "Dnes zavřeno — počasí nám nepřeje"         │
+// │     'wind'    → 🌬  "Dnes zavřeno kvůli silnému větru"          │
+// │     'custom'  → vlastní text v CUSTOM_CLOSURE_TEXT níže          │
+// │                                                                  │
+// │  ZMĚNA STAVU: stačí přepsat hodnotu v této proměnné              │
+// │  a uložit soubor — web se sám po refreshi přepne.               │
+// └──────────────────────────────────────────────────────────────────┘
+const WEATHER_CLOSURE = rain;  // ← TADY MĚŇTE
+
+// Když používáte 'custom', sem vepište vlastní text (do 80 znaků):
+const CUSTOM_CLOSURE_TEXT = 'Dnes máme zavřeno — vrátíme se zítra!';
+
+const CLOSURE_PRESETS = {
+  rain:   { emoji: '🌧',  title: 'Dnes zavřeno',  subtitle: 'Kvůli dešti se zítra těšíme zase nashledanou' },
+  storm:  { emoji: '⛈',   title: 'Dnes zavřeno',  subtitle: 'Bouřka nás zahnala dovnitř — zítra zase otevíráme' },
+  cold:   { emoji: '❄',   title: 'Dnes zavřeno',  subtitle: 'Počasí dnes na zmrzlinu zrovna není — vrátíme se' },
+  wind:   { emoji: '🌬',   title: 'Dnes zavřeno',  subtitle: 'Silný vítr nás dnes zavřel — omluvte to' },
+  custom: { emoji: '⚠️',  title: 'Dnes zavřeno',  subtitle: CUSTOM_CLOSURE_TEXT }
+};
+
 // Datum otevření sezóny — když je v minulosti, countdown se neukáže
 // a hned se zobrazuje živý stav Otevřeno/Zavřeno.
 const SEASON_OPEN_DATE = new Date('2026-04-30T14:00:00+02:00');
@@ -3960,6 +4062,18 @@ function minutesToTime(mins){
 }
 
 function getCurrentStatus(now){
+  // Nejvyšší priorita: výjimečné uzavření kvůli počasí
+  if(WEATHER_CLOSURE && CLOSURE_PRESETS[WEATHER_CLOSURE]){
+    const preset = CLOSURE_PRESETS[WEATHER_CLOSURE];
+    return {
+      isOpen: false,
+      isWeatherClosure: true,
+      text: preset.title,
+      sub: preset.subtitle,
+      emoji: preset.emoji
+    };
+  }
+
   const day = now.getDay();
   const today = OPEN_HOURS[day];
   const nowMins = now.getHours() * 60 + now.getMinutes();
@@ -3995,6 +4109,10 @@ function getCurrentStatus(now){
   const statusWrap    = document.getElementById('hero-status');
   const countdownEl   = document.getElementById('hero-countdown');
   const livestatusEl  = document.getElementById('hero-livestatus');
+  const weatherEl     = document.getElementById('hero-weather');
+  const weatherEmoji  = document.getElementById('hero-weather-emoji');
+  const weatherTitle  = document.getElementById('hero-weather-title');
+  const weatherSub    = document.getElementById('hero-weather-sub');
   const cdDays        = document.getElementById('cd-days');
   const cdHours       = document.getElementById('cd-hours');
   const cdMins        = document.getElementById('cd-mins');
@@ -4016,6 +4134,7 @@ function getCurrentStatus(now){
       // Před otevřením sezóny — countdown
       countdownEl.hidden  = false;
       livestatusEl.hidden = true;
+      weatherEl.hidden    = true;
       if(navStatus) navStatus.hidden = true;
 
       const days  = Math.floor(msLeft / (1000 * 60 * 60 * 24));
@@ -4027,19 +4146,36 @@ function getCurrentStatus(now){
       cdMins.textContent  = String(mins).padStart(2,'0');
       cdSecs.textContent  = String(secs).padStart(2,'0');
     } else {
-      // V sezóně — živý stav
-      countdownEl.hidden  = true;
-      livestatusEl.hidden = false;
-
+      // V sezóně
+      countdownEl.hidden = true;
       const s = getCurrentStatus(now);
-      lsDot.className = 'hero-livestatus-dot ' + (s.isOpen ? 'is-open' : 'is-closed');
-      lsText.textContent = s.text;
-      lsSub.textContent  = s.sub;
 
-      if(navStatus){
-        navStatus.hidden = false;
-        navStatus.className = 'nav-status ' + (s.isOpen ? 'is-open' : 'is-closed');
-        navStatusText.textContent = s.text;
+      if(s.isWeatherClosure){
+        // Speciální banner kvůli počasí
+        livestatusEl.hidden = true;
+        weatherEl.hidden    = false;
+        weatherEmoji.textContent = s.emoji;
+        weatherTitle.textContent = s.text;
+        weatherSub.textContent   = s.sub;
+
+        if(navStatus){
+          navStatus.hidden = false;
+          navStatus.className = 'nav-status is-weather';
+          navStatusText.textContent = s.emoji + ' Dnes zavřeno';
+        }
+      } else {
+        // Běžný stav Otevřeno/Zavřeno
+        weatherEl.hidden    = true;
+        livestatusEl.hidden = false;
+        lsDot.className = 'hero-livestatus-dot ' + (s.isOpen ? 'is-open' : 'is-closed');
+        lsText.textContent = s.text;
+        lsSub.textContent  = s.sub;
+
+        if(navStatus){
+          navStatus.hidden = false;
+          navStatus.className = 'nav-status ' + (s.isOpen ? 'is-open' : 'is-closed');
+          navStatusText.textContent = s.text;
+        }
       }
     }
   }
