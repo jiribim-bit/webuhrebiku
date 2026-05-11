@@ -4026,13 +4026,13 @@ function closeBanner(){
 const WEATHER_CLOSURE = 'rain';  // ← TADY MĚŇTE
 
 // Když používáte 'custom', sem vepište vlastní text (do 80 znaků):
-const CUSTOM_CLOSURE_TEXT = 'Dnes máme zavřeno — vrátíme se zítra!';
+const CUSTOM_CLOSURE_TEXT = 'Dnes máme z technických důvodů zavřeno';
 
 const CLOSURE_PRESETS = {
-  rain:   { emoji: '🌧',  title: 'Dnes zavřeno',  subtitle: 'Kvůli dešti se zítra těšíme zase nashledanou' },
-  storm:  { emoji: '⛈',   title: 'Dnes zavřeno',  subtitle: 'Bouřka nás zahnala dovnitř — zítra zase otevíráme' },
-  cold:   { emoji: '❄',   title: 'Dnes zavřeno',  subtitle: 'Počasí dnes na zmrzlinu zrovna není — vrátíme se' },
-  wind:   { emoji: '🌬',   title: 'Dnes zavřeno',  subtitle: 'Silný vítr nás dnes zavřel — omluvte to' },
+  rain:   { emoji: '🌧',  title: 'Dnes zavřeno',  subtitle: 'Dnes zavřeno kvůli dešti' },
+  storm:  { emoji: '⛈',   title: 'Dnes zavřeno',  subtitle: 'Dnes zavřeno kvůli bouřce' },
+  cold:   { emoji: '❄',   title: 'Dnes zavřeno',  subtitle: 'Dnes zavřeno — počasí nám nepřeje' },
+  wind:   { emoji: '🌬',   title: 'Dnes zavřeno',  subtitle: 'Dnes zavřeno kvůli silnému větru' },
   custom: { emoji: '⚠️',  title: 'Dnes zavřeno',  subtitle: CUSTOM_CLOSURE_TEXT }
 };
 
