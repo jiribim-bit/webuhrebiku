@@ -2850,6 +2850,7 @@ function initFirebase(){
     firestoreDoc = firebase.firestore().doc('poll/results');
     pollBackend  = 'firebase';
     console.info('[Anketa] Firebase připojen — anketa běží v komunitním režimu.');
+    subscribeSiteSettings();   // ← denní nabídka + "dnes zavřeno" z admin stránky
     return true;
   } catch(e){
     console.error('[Anketa] Firebase init selhal:', e);
@@ -2885,6 +2886,42 @@ async function incrementGlobal(flavor, delta){
     }, { merge: true });
   } catch(e){
     console.error('[Anketa] Zápis hlasu selhal:', e);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DENNÍ NASTAVENÍ Z ADMIN STRÁNKY  (Firestore: site/daily)
+   ─────────────────────────────────────────────────────────────────
+   Web poslouchá tento dokument živě. Co v něm změníte přes
+   admin.html, se na webu projeví do vteřiny — bez GitHubu.
+
+   Struktura dokumentu:
+     flavors    : ["Vanilka", "Malina", ...]   // dnešní nabídka
+     closure    : null | "rain" | "storm" | "cold" | "wind" | "custom"
+     customText : "vlastní text, když closure == 'custom'"
+
+   Když Firebase nejede, zůstanou hodnoty zadrátované výše.
+═══════════════════════════════════════════════════════════════════ */
+function subscribeSiteSettings(){
+  try {
+    if(!window.firebase || !firebase.apps.length) return;   // Firebase neběží → záloha
+    firebase.firestore().doc('site/daily').onSnapshot(snap => {
+      if(!snap.exists) return;
+      const d = snap.data() || {};
+
+      if(Array.isArray(d.flavors) && d.flavors.length){
+        DAILY_FLAVORS = d.flavors;
+        renderDailyBanner();
+      }
+      if(typeof d.customText === 'string' && d.customText.trim()){
+        CUSTOM_CLOSURE_TEXT = d.customText.trim();
+      }
+      // closure: null / '' = otevřeno normálně
+      WEATHER_CLOSURE = (d.closure && CLOSURE_PRESETS[d.closure]) ? d.closure : null;
+      // živý stav se překresluje sám každou vteřinu → není co volat
+    }, err => console.warn('[Denní nastavení] nedostupné:', err));
+  } catch(e){
+    console.warn('[Denní nastavení] chyba:', e);
   }
 }
 
@@ -3939,13 +3976,18 @@ document.querySelectorAll('.reveal, .reveal-left').forEach(el => {
      'Slaný karamel', 'Čokoláda', 'Vanilka', 'Jahoda RAW s liči'
    ];
 ═════════════════════════════════════════════════════════════════ */
-const DAILY_FLAVORS = [
- 'Los buenos', 'čokoláda', 'jahoda', 'Vanilka',
-  'citron', 'jogurt s ovocem', 'mango', 'pavlova'
+let DAILY_FLAVORS = [
+  'Matcha a Karamel', 'Pekanový Karamel', 'Malina', 'Dubajská',
+  'Pistáciová', 'Jahoda', 'Čokoláda', 'Slaný karamel'
 ];
 
+function renderDailyBanner(){
+  const el = document.getElementById('banner-flavors');
+  if(el) el.textContent = DAILY_FLAVORS.join(' · ');
+}
+
 (function initBanner(){
-  document.getElementById('banner-flavors').textContent = DAILY_FLAVORS.join(' · ');
+  renderDailyBanner();
   // Nastav nav top podle výšky banneru přes JS - nejspolehlivější metoda
   function adjustNav(){
     const banner = document.getElementById('seasonal-banner');
@@ -4023,10 +4065,10 @@ function closeBanner(){
 // │  ZMĚNA STAVU: stačí přepsat hodnotu v této proměnné              │
 // │  a uložit soubor — web se sám po refreshi přepne.               │
 // └──────────────────────────────────────────────────────────────────┘
-const WEATHER_CLOSURE = null;  // ← TADY MĚŇTE
+let WEATHER_CLOSURE = null;  // ← záloha; běžně se řídí z admin stránky
 
 // Když používáte 'custom', sem vepište vlastní text (do 80 znaků):
-const CUSTOM_CLOSURE_TEXT = 'Dnes máme zavřeno — vrátíme se zítra!';
+let CUSTOM_CLOSURE_TEXT = 'Dnes máme zavřeno — vrátíme se zítra!';
 
 const CLOSURE_PRESETS = {
   rain:   { emoji: '🌧',  title: 'Dnes zavřeno',  subtitle: 'Kvůli dešti se zítra těšíme zase nashledanou' },
@@ -4064,7 +4106,8 @@ function minutesToTime(mins){
 function getCurrentStatus(now){
   // Nejvyšší priorita: výjimečné uzavření kvůli počasí
   if(WEATHER_CLOSURE && CLOSURE_PRESETS[WEATHER_CLOSURE]){
-    const preset = CLOSURE_PRESETS[WEATHER_CLOSURE];
+    const preset = { ...CLOSURE_PRESETS[WEATHER_CLOSURE] };
+    if(WEATHER_CLOSURE === 'custom') preset.subtitle = CUSTOM_CLOSURE_TEXT;
     return {
       isOpen: false,
       isWeatherClosure: true,

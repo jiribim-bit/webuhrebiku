@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Správa — U Hřebíků</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style>
+  :root{
+    --bg:#f5f5f5; --bg2:#fff; --text:#141416; --muted:#8a8a90;
+    --border:#e2e2e6; --accent:#b8bcc8; --ok:#1f9d55; --warn:#c0392b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0d0d0f; --bg2:#17171a; --text:#f0f0f2; --muted:#8a8a90; --border:#2a2a2f; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Raleway',system-ui,sans-serif; font-size:15px; line-height:1.6;
+    padding:1.2rem; max-width:760px; margin:0 auto;
+  }
+  h1{
+    font-family:'Barlow Condensed',sans-serif; font-weight:800;
+    letter-spacing:.14em; text-transform:uppercase; font-size:1.5rem;
+    margin:.4rem 0 .2rem;
+  }
+  .sub{ color:var(--muted); font-size:.85rem; margin-bottom:1.6rem; }
+  .card{
+    background:var(--bg2); border:1px solid var(--border);
+    border-radius:12px; padding:1.2rem; margin-bottom:1.1rem;
+  }
+  .card h2{
+    font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    letter-spacing:.14em; text-transform:uppercase;
+    font-size:.85rem; color:var(--muted); margin:0 0 .9rem;
+  }
+  label{ display:block; font-size:.8rem; color:var(--muted); margin-bottom:.3rem; }
+  input[type=email], input[type=password], input[type=text], textarea{
+    width:100%; padding:.7rem .8rem; border:1px solid var(--border);
+    border-radius:8px; background:var(--bg); color:var(--text);
+    font-family:inherit; font-size:15px; margin-bottom:.8rem;
+  }
+  button{
+    font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    letter-spacing:.12em; text-transform:uppercase; font-size:.85rem;
+    padding:.75rem 1.3rem; border-radius:8px; cursor:pointer;
+    border:1px solid var(--border); background:var(--bg); color:var(--text);
+    transition:.15s;
+  }
+  button:hover{ border-color:var(--accent); }
+  button.primary{ background:var(--text); color:var(--bg2); border-color:var(--text); }
+  button.primary:disabled{ opacity:.5; cursor:not-allowed; }
+  .row{ display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; }
+
+  .google-btn{
+    display:inline-flex; align-items:center; gap:.7rem;
+    background:#fff; color:#3c4043; border:1px solid #dadce0;
+    padding:.7rem 1.2rem; border-radius:8px;
+    font-family:'Raleway',sans-serif; font-weight:600;
+    font-size:.9rem; letter-spacing:0; text-transform:none;
+  }
+  .google-btn:hover{ background:#f7f8f8; border-color:#d2d5d9; }
+
+  /* výběr příchutí */
+  .search{ margin-bottom:.8rem; }
+  .chips{ display:flex; flex-wrap:wrap; gap:.4rem; max-height:280px; overflow-y:auto; padding:.2rem; }
+  .chip{
+    padding:.4rem .75rem; border:1px solid var(--border); border-radius:999px;
+    font-size:.82rem; cursor:pointer; user-select:none; background:var(--bg);
+    transition:.12s;
+  }
+  .chip:hover{ border-color:var(--accent); }
+  .chip.on{ background:var(--text); color:var(--bg2); border-color:var(--text); font-weight:600; }
+  .chip.hidden{ display:none; }
+  .count{ font-size:.8rem; color:var(--muted); margin-bottom:.6rem; }
+
+  /* náhled */
+  .preview{
+    background:var(--text); color:var(--bg2); border-radius:8px;
+    padding:.6rem .9rem; font-size:.85rem; margin-top:.9rem;
+    display:flex; gap:.7rem; align-items:center; flex-wrap:wrap;
+  }
+  .preview b{
+    font-family:'Barlow Condensed',sans-serif; letter-spacing:.16em;
+    text-transform:uppercase; opacity:.65; font-size:.75rem;
+  }
+
+  /* zavírání */
+  .closures{ display:flex; flex-direction:column; gap:.45rem; }
+  .closure{
+    display:flex; align-items:center; gap:.7rem; padding:.6rem .8rem;
+    border:1px solid var(--border); border-radius:8px; cursor:pointer;
+    background:var(--bg); transition:.12s;
+  }
+  .closure:hover{ border-color:var(--accent); }
+  .closure.on{ border-color:var(--text); background:var(--bg2); box-shadow:inset 0 0 0 1px var(--text); }
+  .closure .e{ font-size:1.2rem; }
+  .closure .t{ font-size:.88rem; }
+  .closure .t small{ display:block; color:var(--muted); font-size:.75rem; }
+
+  #status{ font-size:.85rem; padding:.6rem 0; min-height:1.4rem; }
+  .ok{ color:var(--ok); }  .err{ color:var(--warn); }
+  .hint{ font-size:.78rem; color:var(--muted); margin-top:.5rem; }
+  #app{ display:none; }
+  .topbar{ display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>Správa webu</h1>
+    <div class="sub">U Hřebíků — denní nabídka a zavírání</div>
+  </div>
+  <button id="logout" style="display:none" onclick="doLogout()">Odhlásit</button>
+</div>
+
+<!-- PŘIHLÁŠENÍ -->
+<div class="card" id="login">
+  <h2>Přihlášení</h2>
+  <p style="margin:0 0 1rem; color:var(--muted); font-size:.88rem">
+    Přístup má pouze účet&nbsp;<b id="admin-email-label"></b>.
+  </p>
+  <button class="google-btn" onclick="doLogin()">
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1c4.1-3.8 6.6-9.4 6.6-16.1z"/>
+      <path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.1 15.4 46 24 46z"/>
+      <path fill="#FBBC05" d="M11.8 28.2c-.4-1.3-.7-2.7-.7-4.2s.3-2.9.7-4.2v-5.7H4.5C3 17.1 2.1 20.4 2.1 24s.9 6.9 2.4 9.9l7.3-5.7z"/>
+      <path fill="#EA4335" d="M24 10.8c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.2 29.9 2 24 2 15.4 2 8.1 6.9 4.5 14.1l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/>
+    </svg>
+    Přihlásit se přes Google
+  </button>
+  <div id="login-status"></div>
+</div>
+
+<!-- APLIKACE -->
+<div id="app">
+
+  <div class="card">
+    <h2>🍦 Dnešní nabídka</h2>
+    <input type="text" class="search" id="search" placeholder="Hledat příchuť…" oninput="filterChips()">
+    <div class="count" id="count">Vybráno: 0</div>
+    <div class="chips" id="chips"></div>
+    <div class="preview">
+      <b>🍦 Dnes máme</b>
+      <span id="preview">—</span>
+    </div>
+    <div class="hint">Klepnutím vyberte, co dnes točíte. Přesně tohle uvidí lidi v pruhu nahoře na webu.</div>
+  </div>
+
+  <div class="card">
+    <h2>⛔ Mimořádné zavření</h2>
+    <div class="closures" id="closures"></div>
+    <div id="custom-wrap" style="display:none; margin-top:.8rem">
+      <label for="customText">Vlastní text (max. 80 znaků)</label>
+      <input type="text" id="customText" maxlength="80" placeholder="Dnes máme zavřeno — vrátíme se zítra!">
+    </div>
+    <div class="hint">Když vyberete zavření, na webu se místo „Otevřeno“ ukáže hláška. Nezapomeňte pak přepnout zpět na „Otevřeno normálně“.</div>
+  </div>
+
+  <div class="row">
+    <button class="primary" id="saveBtn" onclick="save()">Uložit a zveřejnit</button>
+    <button onclick="loadCurrent()">Načíst znovu</button>
+  </div>
+  <div id="status"></div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   Firebase config — stejný projekt jako web
+══════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCktDizJ7_D25DJS6OpJbEu11b_SlcOyFw",
+  authDomain: "u-hrebiku.firebaseapp.com",
+  projectId: "u-hrebiku",
+  storageBucket: "u-hrebiku.firebasestorage.app",
+  messagingSenderId: "784639793156",
+  appId: "1:784639793156:web:fd4430058600eb7e7f7d51"
+};
+
+const ALL_FLAVORS = [
+  "Aloe Vera",
+  "Ananas Sorbet",
+  "Arašídový karamel",
+  "Banán s čokoládou",
+  "Bezinka",
+  "Borůvka",
+  "Borůvka RAW",
+  "Borůvka RAW s Levandulí",
+  "Broskev Sorbet",
+  "Buble Gum",
+  "Citrón",
+  "Citron cheesecake",
+  "Cookies",
+  "Černý rybíz RAW",
+  "Čerstvý Jogurt bez cukru",
+  "Čokoláda",
+  "Čokoláda 72%",
+  "Čokoládový sorbet",
+  "Čtyři druhy ořechů",
+  "Dolce Latte",
+  "Dračí ovoce",
+  "Dračí ovoce RAW Sorbet",
+  "Dubajská",
+  "Dýně s kardamonem",
+  "Fíkový sorbet",
+  "Frgál",
+  "Granátové jablko",
+  "Cheesecake",
+  "Cheesecake s jahodami",
+  "Jablko",
+  "Jahoda RAW",
+  "Jahoda RAW s liči",
+  "Jahoda RAW Sorbet",
+  "Jahodový milkshake",
+  "Jogurt Prolévaný Ovocem",
+  "Karamelová tyčinka",
+  "Káva",
+  "Kokos & Mandle",
+  "Krupicová kaše",
+  "Lesní plody",
+  "Levandule",
+  "Lískový ořech",
+  "Maková",
+  "Malina",
+  "Malina RAW",
+  "Malina RAW Sorbet",
+  "Malina s čokoládou",
+  "Malinový kefír",
+  "Mango",
+  "Mango Sorbet",
+  "Maracuja RAW Sorbet",
+  "Matcha a Karamel",
+  "Medový Perníček",
+  "Meloun",
+  "Meruňka",
+  "Moravský meruňkový koláč",
+  "Nugát",
+  "Nugátový Croissant",
+  "Pekanový Karamel",
+  "Perník s povidly",
+  "Pinguino",
+  "Pistácie 100%",
+  "Pistácie pesto",
+  "Pistáciová",
+  "Pomeranč",
+  "Popcorn v karamelu",
+  "Praskací lízátko",
+  "Přesnídávka",
+  "Punč s rozinkami",
+  "Rakytník",
+  "Sachr",
+  "Slaný karamel",
+  "Slaný karamel s himalájskou solí",
+  "Stracciatella",
+  "Šmoula",
+  "Špička",
+  "Šreck",
+  "Tiramisu",
+  "Tvarohový Méďa",
+  "Unicorn",
+  "Vanilka",
+  "Vanilka Madagaskar",
+  "Vanilka Nutella",
+  "Vanilka Retro",
+  "Větrník",
+  "Višeň RAW Sorbet",
+  "Višňové brownie",
+  "Vlašský ořech"
+];
+
+const CLOSURES = [
+  { key:'',       e:'✅', t:'Otevřeno normálně',  s:'Web ukazuje běžný stav otevřeno/zavřeno' },
+  { key:'rain',   e:'🌧', t:'Zavřeno — déšť',     s:'Kvůli dešti se zítra těšíme zase nashledanou' },
+  { key:'storm',  e:'⛈',  t:'Zavřeno — bouřka',   s:'Bouřka nás zahnala dovnitř — zítra zase otevíráme' },
+  { key:'cold',   e:'❄',  t:'Zavřeno — zima',     s:'Počasí dnes na zmrzlinu zrovna není — vrátíme se' },
+  { key:'wind',   e:'🌬',  t:'Zavřeno — vítr',     s:'Silný vítr nás dnes zavřel — omluvte to' },
+  { key:'custom', e:'⚠️', t:'Zavřeno — vlastní',  s:'Napíšete si vlastní text' },
+];
+
+/* Jediný účet s přístupem.
+   POZOR: tahle kontrola je jen pro pohodlí — skutečnou ochranu
+   vynucují pravidla Firestore na serveru (firestore-pravidla.txt). */
+const ADMIN_EMAIL = 'jiri.bim@gmail.com';
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const doc  = firebase.firestore().doc('site/daily');
+
+let selected = new Set();
+let closure  = '';
+
+document.getElementById('admin-email-label').textContent = ADMIN_EMAIL;
+
+/* ───── přihlášení přes Google ───── */
+auth.onAuthStateChanged(async user => {
+  const el = document.getElementById('login-status');
+
+  // Přihlásil se někdo jiný → okamžitě odhlásit
+  if(user && user.email !== ADMIN_EMAIL){
+    await auth.signOut();
+    el.className = 'err';
+    el.textContent = 'Účet ' + user.email + ' nemá přístup.';
+    return;
+  }
+
+  document.getElementById('login').style.display  = user ? 'none'  : 'block';
+  document.getElementById('app').style.display    = user ? 'block' : 'none';
+  document.getElementById('logout').style.display = user ? 'block' : 'none';
+
+  if(user){ el.textContent = ''; buildUI(); loadCurrent(); }
+});
+
+function doLogin(){
+  const el = document.getElementById('login-status');
+  el.textContent = 'Otevírám přihlášení…'; el.className = '';
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ login_hint: ADMIN_EMAIL, prompt: 'select_account' });
+
+  auth.signInWithPopup(provider).catch(e => {
+    el.className = 'err';
+    if(e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request'){
+      el.textContent = 'Přihlášení zrušeno.';
+    } else if(e.code === 'auth/unauthorized-domain'){
+      el.textContent = 'Tato doména není povolená ve Firebase (Authentication → Settings → Authorized domains).';
+    } else if(e.code === 'auth/operation-not-allowed'){
+      el.textContent = 'Přihlášení přes Google není ve Firebase zapnuté.';
+    } else {
+      el.textContent = 'Přihlášení selhalo: ' + e.message;
+    }
+  });
+}
+function doLogout(){ auth.signOut(); }
+
+/* ───── sestavení UI ───── */
+function buildUI(){
+  const chips = document.getElementById('chips');
+  if(chips.children.length) return;      // už postaveno
+  chips.innerHTML = ALL_FLAVORS.map(f =>
+    `<div class="chip" data-f="${f}" onclick="toggleFlavor(this)">${f}</div>`
+  ).join('');
+
+  document.getElementById('closures').innerHTML = CLOSURES.map(c =>
+    `<div class="closure" data-k="${c.key}" onclick="pickClosure(this)">
+       <span class="e">${c.e}</span>
+       <span class="t">${c.t}<small>${c.s}</small></span>
+     </div>`
+  ).join('');
+}
+
+function toggleFlavor(el){
+  const f = el.dataset.f;
+  selected.has(f) ? selected.delete(f) : selected.add(f);
+  el.classList.toggle('on');
+  refreshPreview();
+}
+
+function pickClosure(el){
+  closure = el.dataset.k;
+  document.querySelectorAll('.closure').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('custom-wrap').style.display = closure === 'custom' ? 'block' : 'none';
+}
+
+function filterChips(){
+  const q = document.getElementById('search').value.toLowerCase()
+              .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  document.querySelectorAll('.chip').forEach(c => {
+    const n = c.dataset.f.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    c.classList.toggle('hidden', q && !n.includes(q));
+  });
+}
+
+function refreshPreview(){
+  const list = ALL_FLAVORS.filter(f => selected.has(f));   // zachovej pořadí menu
+  document.getElementById('preview').textContent = list.length ? list.join(' · ') : '—';
+  document.getElementById('count').textContent   = 'Vybráno: ' + list.length;
+}
+
+/* ───── načtení aktuálního stavu ───── */
+async function loadCurrent(){
+  const st = document.getElementById('status');
+  st.textContent = 'Načítám…'; st.className = '';
+  try {
+    const snap = await doc.get();
+    const d = snap.exists ? (snap.data() || {}) : {};
+
+    selected = new Set(Array.isArray(d.flavors) ? d.flavors : []);
+    document.querySelectorAll('.chip').forEach(c =>
+      c.classList.toggle('on', selected.has(c.dataset.f))
+    );
+
+    closure = d.closure || '';
+    document.querySelectorAll('.closure').forEach(c =>
+      c.classList.toggle('on', c.dataset.k === closure)
+    );
+    document.getElementById('custom-wrap').style.display = closure === 'custom' ? 'block' : 'none';
+    document.getElementById('customText').value = d.customText || '';
+
+    refreshPreview();
+    st.className = 'ok';
+    st.textContent = snap.exists ? 'Načteno aktuální nastavení.' : 'Zatím nic nenastaveno — vyberte a uložte.';
+  } catch(e){
+    st.className = 'err';
+    st.textContent = 'Nepodařilo se načíst: ' + e.message;
+  }
+}
+
+/* ───── uložení ───── */
+async function save(){
+  const st  = document.getElementById('status');
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  st.textContent = 'Ukládám…'; st.className = '';
+
+  const payload = {
+    flavors:    ALL_FLAVORS.filter(f => selected.has(f)),
+    closure:    closure || null,
+    customText: document.getElementById('customText').value.trim(),
+    updatedAt:  firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try {
+    await doc.set(payload, { merge: true });
+    st.className = 'ok';
+    st.textContent = '✅ Zveřejněno. Na webu se to projeví do vteřiny.';
+  } catch(e){
+    st.className = 'err';
+    st.textContent = e.code === 'permission-denied'
+      ? '❌ Chybí oprávnění — zkontrolujte pravidla Firestore (viz návod).'
+      : '❌ Uložení selhalo: ' + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
